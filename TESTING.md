@@ -56,3 +56,21 @@ block here: exact command, verbatim trimmed output, commit hash it ran against.
   grace 1 and 9999, runShell, lockScreen, requireAuth false/absent, schemaVersion 2,
   prose-wrapped JSON, duplicate triggers, hideApps without ids, empty actions, Terminal id.
 - `./verify.sh` → 127 PASS, 0 FAIL, "VERIFY: ALL GATES GREEN".
+
+## S5 — camera pipeline, perception, HUD, simulator mode (2026-07-16)
+- Implemented by Codex gpt-5.6-sol (resumed PRIMARY session 019f6b6d-0524-7762-8d71-6a69a2f5e096):
+  CameraSource (AVFoundation .vga640x480, builtInWideAngleCamera ONLY — continuity/external
+  cameras impossible to bind; 5 fps timestamp gate; Vision face+human requests, personCount =
+  max; interruption/error → cameraUnavailable, never absence), first-run pre-prompt sheet,
+  honest denied-state UI with System Settings link, HUDPanel (non-activating NSPanel),
+  Simulator mode (scripted scenarios through the REAL machine, SIMULATOR badge), fixture
+  capture double-gated (#if DEBUG + --fixture-capture flag — Release builds compile capture
+  to false), fixtures/ gitignored.
+- Timing isolation extended: CameraSource is constructed in exactly one place and enters only
+  via start(source:) → MachineConfig.production(applying: activePolicy); simulator exit routes
+  through restoreProductionAfterSimulator → start(source:); enforced by new
+  RuntimeIsolationChecks (structural source assertions).
+- `./verify.sh` → 131 PASS, 0 FAIL, 1 honest SKIP (fixture-vision awaits human-captured
+  fixtures), "VERIFY: ALL GATES GREEN".
+- Human-required remainder: camera TCC grant, fixture photos (empty-room/one-person/
+  two-people), live Touch ID, curtain visual review — CHECKPOINT_1.md.

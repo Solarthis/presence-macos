@@ -11,16 +11,54 @@ final class MenuBarState: ObservableObject {
     @Published private(set) var isProtected = false
     @Published private(set) var isSafeMode = false
     @Published private(set) var liveTestEnabled = false
+    @Published private(set) var cameraAuthorizationState = CameraAuthorizationState.notDetermined
+    @Published private(set) var isHUDVisible = false
+    @Published private(set) var activeScenarioName: String?
+    @Published private(set) var fixtureCaptureAvailable = false
+
+    var isSimulatorRunning: Bool { activeScenarioName != nil }
 
     var menuBarText: String {
         let base = "\(statusText) — \(detailText)"
-        return liveTestEnabled ? "\(base) — LIVE TEST" : base
+        let simulatorText = activeScenarioName.map { " — SIMULATOR: \($0)" } ?? ""
+        let liveTestText = liveTestEnabled ? " — LIVE TEST" : ""
+        return "\(base)\(simulatorText)\(liveTestText)"
     }
 
     private init() {}
 
     func setLiveTest(enabled: Bool) {
         liveTestEnabled = enabled
+    }
+
+    func setFixtureCaptureAvailable(_ available: Bool) {
+        fixtureCaptureAvailable = available
+    }
+
+    func setHUDVisible(_ visible: Bool) {
+        isHUDVisible = visible
+    }
+
+    func beginSimulator(_ scenarioName: String) {
+        activeScenarioName = scenarioName
+    }
+
+    func endSimulator() {
+        activeScenarioName = nil
+    }
+
+    func showCameraPermissionNeeded() {
+        cameraAuthorizationState = .notDetermined
+        showCameraUnavailableText()
+    }
+
+    func showCameraUnavailable() {
+        cameraAuthorizationState = .unavailable
+        showCameraUnavailableText()
+    }
+
+    func markCameraAuthorized() {
+        cameraAuthorizationState = .authorized
     }
 
     func showSafeMode(notice: String?) {
@@ -39,6 +77,15 @@ final class MenuBarState: ObservableObject {
         statusText = "PAUSED"
         detailText = "monitoring off — camera pipeline not yet installed"
         symbolName = "pause.circle.fill"
+    }
+
+    private func showCameraUnavailableText() {
+        isSafeMode = false
+        isPaused = true
+        isProtected = false
+        statusText = "CAMERA UNAVAILABLE"
+        detailText = "camera unavailable — monitoring off"
+        symbolName = "video.slash.fill"
     }
 
     func update(from state: PresenceState, config: MachineConfig, now: Double) {

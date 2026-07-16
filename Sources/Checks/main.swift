@@ -19,6 +19,8 @@ check(PresenceCoreVersion.schemaVersion == 1, "checks-harness-runs")
 runStateMachineChecks()
 runSafetyConfigChecks()
 runPolicyChecks()
+runRuntimeIsolationChecks()
+runFixtureVisionChecks()
 
 if failures > 0 {
     print("\(failures) FAILURE(S)")

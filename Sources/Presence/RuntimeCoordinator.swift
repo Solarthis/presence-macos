@@ -10,6 +10,8 @@ final class RuntimeCoordinator: NSObject {
     private let authGate: AuthGate
     private let eventStore: EventStore
     private let policyStore: PolicyStore
+    private let hudPanel: HUDPanel
+    private let fixtureCaptureEnabled: Bool
     private var tickTimer: Timer?
     private var liveTestDismissTimer: Timer?
     private var lastConfidenceBand: ConfidenceBand?
@@ -18,11 +20,16 @@ final class RuntimeCoordinator: NSObject {
     private var observersInstalled = false
     private var isScriptedRun = false
     private var policyRefreshPending = false
+    private var sourceGeneration = 0
+    private var lastPersonCount: Int?
+    private var hudWasVisibleBeforeSimulator = false
+    private var simulatorRestorePending = false
 
     init(
         menuBarState: MenuBarState,
         liveTestEnabled: Bool,
-        policyStore: PolicyStore = .shared
+        policyStore: PolicyStore = .shared,
+        fixtureCaptureEnabled: Bool = false
     ) {
         let launchTime = ProcessInfo.processInfo.systemUptime
         machine = Machine(
@@ -32,6 +39,12 @@ final class RuntimeCoordinator: NSObject {
         self.menuBarState = menuBarState
         self.liveTestEnabled = liveTestEnabled
         self.policyStore = policyStore
+        hudPanel = HUDPanel()
+#if DEBUG
+        self.fixtureCaptureEnabled = fixtureCaptureEnabled
+#else
+        self.fixtureCaptureEnabled = false
+#endif
         eventStore = EventStore()
 
         var authenticationRequest: (() -> Void)?
@@ -58,9 +71,12 @@ final class RuntimeCoordinator: NSObject {
             self?.activePolicyChanged(policy)
         }
         menuBarState.setLiveTest(enabled: liveTestEnabled)
+        menuBarState.setFixtureCaptureAvailable(self.fixtureCaptureEnabled)
     }
 
     func start(source: PresenceSource?) {
+        activeSource?.stop()
+        sourceGeneration += 1
         isScriptedRun = false
         installObservers()
         startTickTimer()
@@ -75,10 +91,43 @@ final class RuntimeCoordinator: NSObject {
     }
 
     func startScripted(scenario: ScriptedSource.Scenario) {
-        isScriptedRun = true
         installObservers()
         startTickTimer()
-        begin(source: ScriptedSource(scenario: scenario), config: .scriptedDemo)
+        beginSimulator(scenario)
+    }
+
+    func startForCurrentCameraAuthorization() {
+        switch CameraSource.authorizationState {
+        case .authorized:
+            startCameraMonitoring()
+        case .notDetermined:
+            start(source: nil)
+            menuBarState.showCameraPermissionNeeded()
+            updateHUD()
+        case .unavailable:
+            start(source: nil)
+            menuBarState.showCameraUnavailable()
+            updateHUD()
+        }
+    }
+
+    func requestCameraAccess() {
+        guard CameraSource.authorizationState == .notDetermined else {
+            startForCurrentCameraAuthorization()
+            return
+        }
+        CameraSource.requestAccess { [weak self] granted in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                if granted {
+                    self.startCameraMonitoring()
+                } else {
+                    self.start(source: nil)
+                    self.menuBarState.showCameraUnavailable()
+                    self.updateHUD()
+                }
+            }
+        }
     }
 
     func stop() {
@@ -90,6 +139,9 @@ final class RuntimeCoordinator: NSObject {
         liveTestDismissTimer = nil
         authGate.cancel()
         curtainController.dismiss()
+        hudPanel.hide()
+        menuBarState.setHUDVisible(false)
+        menuBarState.endSimulator()
         policyStore.onActivePolicyChanged = nil
         removeObservers()
     }
@@ -110,36 +162,81 @@ final class RuntimeCoordinator: NSObject {
     }
 
     func simulate(_ scenario: ScriptedSource.Scenario) {
-        isScriptedRun = true
-        activeSource?.stop()
-        authGate.cancel()
-        liveTestDismissTimer?.invalidate()
-        liveTestDismissTimer = nil
-        curtainController.dismiss()
-        begin(source: ScriptedSource(scenario: scenario), config: .scriptedDemo)
+        guard !curtainController.isRaised else { return }
+        beginSimulator(scenario)
+    }
+
+    func stopSimulator() {
+        guard isScriptedRun else { return }
+        finishOrDeferSimulatorRestoration()
+    }
+
+    func toggleHUD() {
+        guard !isScriptedRun else { return }
+        if hudPanel.isVisible {
+            hudPanel.hide()
+            menuBarState.setHUDVisible(false)
+        } else {
+            hudPanel.show()
+            menuBarState.setHUDVisible(true)
+            updateHUD()
+        }
+    }
+
+    func captureFixtureFrame() {
+        guard fixtureCaptureEnabled, let camera = activeSource as? CameraSource else { return }
+        camera.captureFixtureFrame { result in
+            if case .failure = result {
+                DispatchQueue.main.async { NSSound.beep() }
+            }
+        }
     }
 
     private func begin(source: PresenceSource, config: MachineConfig) {
+        sourceGeneration += 1
+        let generation = sourceGeneration
         let launchTime = now()
         machine = Machine(config: config, launchTime: launchTime)
         activeSource = source
+        lastPersonCount = nil
         menuBarState.update(from: machine.state, config: machine.config, now: launchTime)
+        updateHUD()
         source.start { [weak self] event in
+            let receive = {
+                guard let self, self.sourceGeneration == generation else { return }
+                self.process(event)
+            }
             if Thread.isMainThread {
-                self?.process(event)
+                receive()
             } else {
-                DispatchQueue.main.async { self?.process(event) }
+                DispatchQueue.main.async(execute: receive)
             }
         }
     }
 
     private func process(_ event: PresenceEvent) {
-        if case let .detection(_, _, band) = event {
+        if case let .detection(_, personCount, band) = event {
+            lastPersonCount = personCount
             lastConfidenceBand = band
         }
+        let cameraEvent = activeSource is CameraSource
         let effects = machine.handle(event)
         execute(effects)
         menuBarState.update(from: machine.state, config: machine.config, now: now())
+        if cameraEvent {
+            switch event {
+            case .cameraUnavailable:
+                menuBarState.showCameraUnavailable()
+            case .cameraRestored:
+                menuBarState.markCameraAuthorized()
+                menuBarState.update(from: machine.state, config: machine.config, now: now())
+            case .detection:
+                menuBarState.markCameraAuthorized()
+            default:
+                break
+            }
+        }
+        updateHUD()
     }
 
     private func execute(_ effects: [Effect]) {
@@ -204,6 +301,7 @@ final class RuntimeCoordinator: NSObject {
 
     private func authenticationSucceeded() {
         process(.restoreAuthenticated(t: now()))
+        finishPendingSimulatorRestorationIfPossible()
         if policyRefreshPending {
             policyRefreshPending = false
             activePolicyChanged(policyStore.activePolicy)
@@ -229,12 +327,14 @@ final class RuntimeCoordinator: NSObject {
             guard let self, self.curtainController.isRaised else { return }
             self.pendingRestoreAction = "live-test-autodismiss"
             self.process(.restoreAuthenticated(t: self.now()))
+            self.finishPendingSimulatorRestorationIfPossible()
         }
         liveTestDismissTimer = timer
         RunLoop.main.add(timer, forMode: .common)
     }
 
     private func startTickTimer() {
+        guard tickTimer == nil else { return }
         let timer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
             guard let self else { return }
             self.process(.tick(t: self.now()))
@@ -295,6 +395,7 @@ final class RuntimeCoordinator: NSObject {
 
     @objc private func screenParametersDidChange() {
         curtainController.recoverScreens()
+        hudPanel.reposition()
         processEnvironmental(.displayChange(t: now()))
     }
 
@@ -315,14 +416,94 @@ final class RuntimeCoordinator: NSObject {
 
         let config = MachineConfig.production(applying: policy)
         if let source = activeSource {
-            source.stop()
-            begin(source: source, config: config)
+            start(source: source)
         } else {
             let launchTime = now()
             machine = Machine(config: config, launchTime: launchTime)
             _ = machine.handle(.pause(t: launchTime))
             menuBarState.showNoCameraPaused()
+            updateHUD()
         }
+    }
+
+    private func beginSimulator(_ scenario: ScriptedSource.Scenario) {
+        if !isScriptedRun {
+            hudWasVisibleBeforeSimulator = hudPanel.isVisible
+        }
+        activeSource?.stop()
+        sourceGeneration += 1
+        authGate.cancel()
+        liveTestDismissTimer?.invalidate()
+        liveTestDismissTimer = nil
+        isScriptedRun = true
+        simulatorRestorePending = false
+        hudPanel.show()
+        menuBarState.setHUDVisible(true)
+        menuBarState.beginSimulator(scenario.rawValue)
+
+        let source = ScriptedSource(scenario: scenario) { [weak self] in
+            self?.finishOrDeferSimulatorRestoration()
+        }
+        begin(source: source, config: .scriptedDemo)
+    }
+
+    private func finishOrDeferSimulatorRestoration() {
+        guard isScriptedRun else { return }
+        activeSource?.stop()
+        sourceGeneration += 1
+        if curtainController.isRaised {
+            simulatorRestorePending = true
+            return
+        }
+        restoreProductionAfterSimulator()
+    }
+
+    private func finishPendingSimulatorRestorationIfPossible() {
+        guard simulatorRestorePending, !curtainController.isRaised else { return }
+        simulatorRestorePending = false
+        restoreProductionAfterSimulator()
+    }
+
+    /// Simulator exit is structurally routed through start(source:), the production-only entrypoint.
+    private func restoreProductionAfterSimulator() {
+        guard isScriptedRun else { return }
+        isScriptedRun = false
+        simulatorRestorePending = false
+        menuBarState.endSimulator()
+        if !hudWasVisibleBeforeSimulator {
+            hudPanel.hide()
+            menuBarState.setHUDVisible(false)
+        }
+
+        switch CameraSource.authorizationState {
+        case .authorized:
+            startCameraMonitoring()
+        case .notDetermined:
+            start(source: nil)
+            menuBarState.showCameraPermissionNeeded()
+            updateHUD()
+        case .unavailable:
+            start(source: nil)
+            menuBarState.showCameraUnavailable()
+            updateHUD()
+        }
+    }
+
+    /// CameraSource construction is private and every instance enters through start(source:).
+    private func startCameraMonitoring() {
+        menuBarState.markCameraAuthorized()
+        start(source: CameraSource(fixtureCaptureEnabled: fixtureCaptureEnabled))
+    }
+
+    private func updateHUD() {
+        hudPanel.update(
+            state: machine.state,
+            config: machine.config,
+            now: now(),
+            personCount: lastPersonCount,
+            confidenceBand: lastConfidenceBand,
+            scenarioName: menuBarState.activeScenarioName
+        )
     }
 
     private func now() -> Double {

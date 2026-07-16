@@ -5,3 +5,4 @@ Presence.app/
 *.secrets.*
 logs/
 spikes/*.bin
+fixtures/

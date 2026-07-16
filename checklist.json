@@ -41,8 +41,8 @@
       "slice": 5,
       "description": "Camera pipeline + Perception layer + HUD + simulator mode",
       "tier": "agent",
-      "status": "todo",
-      "evidence": null,
+      "status": "agent_complete",
+      "evidence": "TESTING.md#s5",
       "blocked_reason": null
     },
     {

@@ -29,10 +29,12 @@ final class ScriptedSource: PresenceSource {
     }
 
     let scenario: Scenario
+    private let onFinished: (() -> Void)?
     private var workItems: [DispatchWorkItem] = []
 
-    init(scenario: Scenario) {
+    init(scenario: Scenario, onFinished: (() -> Void)? = nil) {
         self.scenario = scenario
+        self.onFinished = onFinished
     }
 
     func start(emit: @escaping (PresenceEvent) -> Void) {
@@ -43,6 +45,14 @@ final class ScriptedSource: PresenceSource {
             }
             workItems.append(item)
             DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: item)
+        }
+        if let onFinished {
+            let item = DispatchWorkItem(block: onFinished)
+            workItems.append(item)
+            DispatchQueue.main.asyncAfter(
+                deadline: .now() + completionDelay(for: scenario),
+                execute: item
+            )
         }
     }
 
@@ -74,13 +84,23 @@ final class ScriptedSource: PresenceSource {
         case .secondViewer:
             return presentPrelude + [
                 (5.3, .detection(personCount: 2, band: .high)),
-                (10.3, .detection(personCount: 2, band: .high)),
+                (10.5, .detection(personCount: 2, band: .high)),
             ]
 
         case .cameraLoss:
             return presentPrelude + [
                 (5.3, .cameraUnavailable),
             ]
+        }
+    }
+
+    private func completionDelay(for scenario: Scenario) -> Double {
+        let lastStep = steps(for: scenario).map(\.0).max() ?? 0
+        switch scenario {
+        case .walkAway:
+            return lastStep + MachineConfig.scriptedDemo.graceSeconds + 1
+        case .leanAway, .secondViewer, .cameraLoss:
+            return lastStep + 1
         }
     }
 }
