@@ -5,7 +5,7 @@ final class MenuBarState: ObservableObject {
     static let shared = MenuBarState()
 
     @Published private(set) var statusText = "PAUSED"
-    @Published private(set) var detailText = "monitoring off — camera pipeline not yet installed"
+    @Published private(set) var detailText = "monitoring off — choose Start Monitoring from this menu"
     @Published private(set) var symbolName = "pause.circle.fill"
     @Published private(set) var isPaused = true
     @Published private(set) var isProtected = false
@@ -75,7 +75,7 @@ final class MenuBarState: ObservableObject {
         isPaused = true
         isProtected = false
         statusText = "PAUSED"
-        detailText = "monitoring off — camera pipeline not yet installed"
+        detailText = "monitoring off — choose Start Monitoring from this menu"
         symbolName = "pause.circle.fill"
     }
 
