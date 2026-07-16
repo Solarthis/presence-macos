@@ -6,7 +6,9 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 BUNDLE_ID="com.solarthis.presence"                    # IMMUTABLE — TCC grants are keyed to it
-SIGN_ID="FCD7116289F2B86E3CA5477065F9172129AA68E6"     # Apple Development (MB77Q6TVVS); ad-hoc is FORBIDDEN
+# Maintainer identity by default; override with PRESENCE_SIGN_ID=<your identity hash or name>.
+# Falls back to ad-hoc when the identity isn't in the keychain (public clones).
+SIGN_ID="${PRESENCE_SIGN_ID:-FCD7116289F2B86E3CA5477065F9172129AA68E6}"
 APP="Presence.app"
 
 swift build -c release
@@ -24,7 +26,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>CFBundleName</key><string>Presence</string>
     <key>CFBundleExecutable</key><string>Presence</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>0.1.0</string>
+    <key>CFBundleShortVersionString</key><string>1.0.1</string>
     <key>CFBundleVersion</key><string>1</string>
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>LSUIElement</key><true/>
@@ -38,12 +40,18 @@ printf 'APPL????' > "$APP/Contents/PkgInfo"
 grep -q "<string>com.solarthis.presence</string>" "$APP/Contents/Info.plist" \
   || { echo "FATAL: CFBundleIdentifier drifted"; exit 1; }
 
-codesign --force --sign "$SIGN_ID" "$APP"
-
-# Gate: designated requirement must be identity-based; a cdhash DR means ad-hoc
-# signing sneaked in and the camera TCC grant will silently die on next rebuild.
-DR="$(codesign -d -r- "$APP" 2>&1)"
-echo "$DR" | grep -q "Apple Development" || { echo "FATAL: not signed with the pinned identity"; echo "$DR"; exit 1; }
-echo "$DR" | grep -q 'cdhash H"' && { echo "FATAL: cdhash designated requirement (ad-hoc?)"; echo "$DR"; exit 1; }
-
-echo "OK: $APP built and signed (bundle id ${BUNDLE_ID})"
+if security find-identity -v -p codesigning 2>/dev/null | grep -q "$SIGN_ID"; then
+  codesign --force --sign "$SIGN_ID" "$APP"
+  # Gate: designated requirement must be identity-based; a cdhash DR means ad-hoc
+  # signing sneaked in and the camera TCC grant will silently die on next rebuild.
+  DR="$(codesign -d -r- "$APP" 2>&1)"
+  echo "$DR" | grep -q "Apple Development" || { echo "FATAL: not signed with the pinned identity"; echo "$DR"; exit 1; }
+  echo "$DR" | grep -q 'cdhash H"' && { echo "FATAL: cdhash designated requirement (ad-hoc?)"; echo "$DR"; exit 1; }
+  echo "OK: $APP built and signed (bundle id ${BUNDLE_ID})"
+else
+  # ponytail: ad-hoc fallback so public clones build without the maintainer's identity;
+  # ad-hoc DR is a cdhash, so macOS re-prompts camera permission after every rebuild.
+  echo "WARN: signing identity not found in keychain; ad-hoc signing (camera permission will re-prompt after each rebuild)"
+  codesign --force --sign - "$APP"
+  echo "OK: $APP built and ad-hoc signed (bundle id ${BUNDLE_ID})"
+fi

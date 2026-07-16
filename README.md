@@ -58,10 +58,15 @@ requires an explicit `--fixture-capture` launch flag.
 ```bash
 git clone https://github.com/Solarthis/presence-macos.git
 cd presence-macos
-./verify.sh     # build + 169-check suite + safety gates
+./verify.sh     # build + 173-check suite + safety gates
 ./build.sh      # produces signed Presence.app
 open Presence.app
 ```
+
+Release archives on the Releases page are signed with the maintainer's Apple Development
+identity. Building from source, `./build.sh` signs with your own identity if you set
+`PRESENCE_SIGN_ID=<identity>`, and otherwise falls back to ad-hoc signing — the app runs
+identically, but macOS re-prompts for camera permission after each rebuild.
 
 `verify.sh` is the single verification entry point: it builds, runs the assert-based
 check suite (state machine scenarios, hostile policy fixtures, timing-isolation and
