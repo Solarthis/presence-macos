@@ -208,6 +208,35 @@ policy, reserved for Michael; single command in SUBMISSION.md).
 - Fix: label now reads "monitoring off — choose Start Monitoring from this menu"
   (commit `660443b`, tag `v1.0.2`). `./verify.sh` → 173 PASS / 0 FAIL / 1 SKIP, ALL
   GATES GREEN; rebuilt identity-signed and relaunched.
+## Live function test — agent-driven, on this machine (2026-07-16, post-v1.0.2)
+
+Driven via the DEBUG binary's scripted scenarios (the designed unattended path) and the
+release app, verified through the event store, process state, and safety files. The two
+tests that physically require Michael (camera TCC click, Touch ID) remain his.
+
+- Scenario matrix (debug, `--simulate X --live-test`, real state machine + real curtain):
+  walkAway → presenceLost → graceStarted → curtainRaised → restoreApproved
+  (live-test-autodismiss) PASS; leanAway → grace started, return cancels, NO curtain
+  PASS; secondViewer → additionalViewer + curtain-raised → autodismiss PASS; cameraLoss
+  → UNKNOWN, never protects PASS.
+- Live-test confinement: without `--live-test` the same scenario's curtain PERSISTED
+  (no auto-dismiss event) — the D10 gate holds outside live-test sessions. PASS.
+- A6 kill-while-curtained: `kill -9` with the curtain raised → process and curtain gone
+  immediately. PASS.
+- Protected-state non-persistence: relaunch after the kill came up disarmed — only a
+  normal monitoringPaused event, no curtain, no protected state. PASS.
+- Crash-loop safe mode fired FOR REAL, unplanned: three SIGTERM test terminations within
+  5 minutes (SIGTERM skips applicationWillTerminate, so each counted as unclean) put the
+  next three launches in safe mode — monitoring disabled, zero events, curtain never
+  initialized. Exactly the designed behavior; test-state files then reset. PASS.
+- Emergency disable: with `~/.presence-disable` present, a scripted run produced ZERO
+  events in 20 s (monitoring never initializes); file removed afterwards. PASS.
+- No-network: release app running with 0 open network sockets (`lsof -i`). PASS.
+- Stale-instance TCC lesson (earlier same day): an instance predating a rebuild blocks
+  the camera permission prompt; relaunch from the current bundle resolves it.
+- NOT agent-testable, remains human: clicking the TCC camera dialog, live Touch ID
+  restore, fixture capture, filming.
+
 - Release v1.0.2 PUBLISHED as latest:
   https://github.com/Solarthis/presence-macos/releases/tag/v1.0.2, assets
   Presence-v1.0.2-macos-arm64.zip + .sha256
