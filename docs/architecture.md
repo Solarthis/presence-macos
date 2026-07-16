@@ -39,7 +39,7 @@ any ──(pause)──▶ paused
 
 Events carry timestamps (`ProcessInfo.systemUptime`); the machine holds no timers. The
 coordinator feeds it a 1 Hz tick plus source events and executes the returned effects
-(`raiseCurtain`, `dismissCurtain`, `requestAuthUI`, `logEvent`, …). This is what makes 169
+(`raiseCurtain`, `dismissCurtain`, `requestAuthUI`, `logEvent`, …). This is what makes 173
 deterministic checks possible.
 
 ## Timing isolation (the safety invariant)
@@ -99,7 +99,7 @@ transmit fields that aren't in the struct. Delete All truncates the store.
 
 ## Verification
 
-`./verify.sh` = build + Checks (169 assertions: state-machine scenarios, hostile policy
+`./verify.sh` = build + Checks (173 assertions: state-machine scenarios, hostile policy
 fixtures, launch-option parsing, structural isolation, recorded Codex-output fixtures)
 + five source gates (layer purity, security-bypass markers, timing isolation, auth
 boundary, login-path mechanisms). It is the commit gate: no checklist item flips without

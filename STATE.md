@@ -13,12 +13,17 @@
 10. Two human checkpoints only; agent never clicks TCC dialogs, does Touch ID, films, or submits.
 
 ## Phase / position
-- Phase: SLICE 8 agent work COMPLETE. Independent review done (5 confirmed findings, all
-  fixed; 5 refuted). Docs, secret scan, v1.0.0 tag, release artifact + checksum, and
-  clean-checkout gate all green (173 checks). Live-call budget: 4 of 10 used.
-- Next concrete action: HUMAN — run the two publication commands in SUBMISSION.md (visibility
-  flip + gh release), then the final human checklist (camera grant, fixtures, Touch ID, demo,
-  Devpost). Agent will not change repo visibility or publish content.
+- Phase: RELEASE PUBLISHED (2026-07-16, authorized). GitHub Release v1.0.1 live on the
+  still-private repo (portable-build fix, artifacts + checksum, honest notes); description
+  + topics set; fresh GitHub clone re-verified (173 PASS / 0 FAIL / 1 SKIP, both build
+  paths, checksum round-trip). Pre-publication content sweep (18-agent adversarial review)
+  found + fixed: stale 169 counts, "opaque curtain"/"no other way in" overclaims,
+  provisional PRIMARY labels, local-path leaks in STATE.md and fixtures-codex headers.
+  Live-call budget: 4 of 10 used.
+- Next concrete action: HUMAN — run the ONE visibility command in SUBMISSION.md (agent
+  policy: no access-control changes), then the final human checklist there (camera grant,
+  Touch ID, fixtures, hardware checks, filming, Devpost — agent's draft prep stopped at
+  the Devpost login screen).
 
 ## Verified environment (preflight 2026-07-16 09:51 -04)
 - macOS 26.4 (25E246) arm64; CLT-only, Swift 6.3; NO Xcode/xcodebuild/XCTest.
@@ -27,7 +32,8 @@
 - Codex CLI 0.139.0, logged in via ChatGPT, model gpt-5.6-sol, reasoning effort high.
 - gh authenticated as Solarthis; repo name presence-macos available; git identity configured.
 - Camera: FaceTime HD present (pin builtInWideAngleCamera; never bind "Mike's iPhone Camera").
-- Working dir for repo: ~/presence-macos (never "/Users/mike/MACBOOK FACE ID" — space + banned phrase).
+- Working dir for repo: ~/presence-macos only (never the old desktop workspace folder —
+  its name contains a space and the banned marketing phrase; scripts/preflight.sh enforces this).
 
 ## Decision log (immutable)
 - D1 2026-07-16: Governing directive = V1 build prompt (authored 2026-07-16) + user's message-level

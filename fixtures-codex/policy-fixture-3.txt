@@ -1,6 +1,6 @@
 OpenAI Codex v0.144.5
 --------
-workdir: /Users/mike/presence-macos
+workdir: [redacted — local clone path]
 model: gpt-5.6-sol
 provider: openai
 approval: never

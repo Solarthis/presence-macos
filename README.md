@@ -11,15 +11,17 @@ see [AI collaboration](#ai-collaboration).
 
 - **Presence detection** — the built-in camera (never an iPhone/Continuity camera) runs
   Apple Vision face + human detection locally at ≤5 fps. No frame ever leaves your Mac.
-- **Privacy curtain** — when you're away past a grace period (default 30 s), an opaque
-  curtain covers every display. Restoring it requires **Touch ID or your password** via
-  Apple's LocalAuthentication — there is no other way in.
+- **Privacy curtain** — when you're away past a grace period (default 30 s), a frosted
+  curtain obscures every display. Restoring it goes through **Touch ID or your password**
+  via Apple's LocalAuthentication — Presence has no unlock path of its own.
 - **Additional-viewer warning** — optionally raises the curtain when a second person is
   visible behind you for a sustained interval.
 - **Policies in plain English** — type "protect my screen when I walk away for 45 seconds"
   and compile it to a policy. With the Codex CLI installed, GPT-5.6 does the compiling
-  (via your existing Codex plan — no API key, no cost); otherwise a built-in deterministic
-  template compiler handles common phrasings. Either way the output is **untrusted input**:
+  (via your existing Codex plan — no API key, no cost; discovered at Homebrew/standard
+  paths, or point the `codexPath` user default at your install; live calls are budgeted —
+  see SECURITY.md); otherwise a built-in deterministic template compiler handles common
+  phrasings. Either way the output is **untrusted input**:
   it passes a strict schema validator, you see a plain-language preview plus the raw JSON,
   and nothing takes effect until you explicitly approve it.
 - **Event history** — a closed-schema local log (state changes only, never images), with

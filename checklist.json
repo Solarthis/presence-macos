@@ -70,7 +70,7 @@
       "tier": "agent",
       "status": "human_required",
       "evidence": "TESTING.md#s8",
-      "blocked_reason": "All agent work done (reviews, docs, scan, artifact, clean-checkout gate, tag). Visibility flip + public Release are access-control/publishing actions reserved for Michael \u2014 commands in SUBMISSION.md."
+      "blocked_reason": "Release v1.0.1 PUBLISHED by agent 2026-07-16 (explicitly authorized): artifacts + checksum + notes live; description/topics set; fresh-clone verification green; content gates swept and fixed. Remaining: Michael's ONE visibility-flip command (agent never changes access controls) \u2014 see SUBMISSION.md."
     },
     {
       "id": "H1",
@@ -79,7 +79,7 @@
       "tier": "human",
       "status": "human_required",
       "evidence": null,
-      "blocked_reason": null
+      "blocked_reason": "Agent verified the live form 2026-07-16 (categories, <3-min PUBLIC video rule, Jul 21 5pm PT deadline — recorded in SUBMISSION.md) but stopped exactly at the Devpost login screen: no authenticated session, and the agent cannot enter credentials."
     },
     {
       "id": "H2",

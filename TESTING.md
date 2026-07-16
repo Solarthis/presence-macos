@@ -145,3 +145,51 @@ block here: exact command, verbatim trimmed output, commit hash it ran against.
 - Tag v1.0.0 created and pushed to the (private) remote.
 - NOT done by the agent, by policy: repo visibility flip and public Release creation are
   access-control/publishing actions reserved for Michael — exact commands in SUBMISSION.md.
+
+## S8-release — publication run (2026-07-16, release-completion session)
+
+Michael explicitly authorized GitHub publication and Release creation this session; the
+agent performed everything except the visibility flip (access-control change — agent
+policy, reserved for Michael; single command in SUBMISSION.md).
+
+- Portable-build gate FAILED at v1.0.0 and was fixed (commit `74a407c`, tag `v1.0.1`):
+  build.sh pinned the maintainer's signing identity with no fallback, so a public clone
+  could not complete `./build.sh`. Fix: keychain check → maintainer identity (DR gate
+  active) or ad-hoc fallback with an honest re-prompt warning; `PRESENCE_SIGN_ID`
+  override; bundle version string 1.0.1. v1.0.0 tag untouched at `a44c341`.
+- `./verify.sh` after fix → 173 PASS, 0 FAIL, 1 SKIP (fixture-vision), ALL GATES GREEN.
+- Release PUBLISHED: `gh release create v1.0.1 …` →
+  https://github.com/Solarthis/presence-macos/releases/tag/v1.0.1 ("Presence v1.0.1 —
+  Build Week release", normal release, notes cover: macOS 26 arm64 minimum, not-notarized
+  + Gatekeeper "Open Anyway" honesty, $0 rationale, pending human hardware verification,
+  no security guarantees). Assets: Presence-v1.0.1-macos-arm64.zip + .sha256
+  (`af78bcd72a9c986065edbf3dbb3e2186e201c1a0c673a368d2f19c08c40805b8`).
+  Round-trip verified: `gh release download v1.0.1` → `shasum -a 256 -c` → OK (the .sha256
+  asset was regenerated without the `dist/` path prefix so the documented command works).
+- Repo metadata set: description + topics (macos, swift, swiftui, privacy,
+  computer-vision, openai-build-week). Visibility still PRIVATE pending Michael.
+- Clean-clone verification (fresh `git clone` from GitHub → /tmp/presence-public-verification,
+  commit `74a407c`): `./verify.sh` → 173 PASS / 0 FAIL / 1 SKIP, ALL GATES GREEN;
+  `./build.sh` → identity-signed OK; `PRESENCE_SIGN_ID=<absent-id> ./build.sh` → ad-hoc
+  fallback OK (portable path); app smoke-launched from the clone and quit cleanly (no
+  camera bind — no TCC grant exists; no curtain test, per protocol). No local files or
+  absolute paths required. NOTE: clone was authenticated (repo still private); the
+  unauthenticated-URL check happens right after Michael's flip (SUBMISSION.md step 0).
+- Binary hygiene: `strings` on the release binary → zero `/Users/…` paths embedded.
+- Full-history secret scan re-run this session: CLEAN (no key/token/PEM patterns in any
+  commit). No tracked images/.env/certificate material (git ls-files audit).
+- Pre-publication content sweep (18-agent adversarial workflow, 5 lenses; endorsement
+  lens clean) — confirmed findings, ALL fixed this session: stale "169" counts in
+  docs/architecture.md; "PRIMARY (provisional)" labels in CODEX_SESSIONS.md; README
+  "opaque curtain"/"no other way in" overclaims (curtain is a frosted NSVisualEffectView
+  blur — wording now matches the code); SUBMISSION tagline "only you can lift" →
+  restore-path phrasing; verbatim banned local path in STATE.md; `workdir: /Users/…`
+  headers in fixtures-codex/*.txt (redacted with an explicit marker; extraction checks
+  re-verified green). Accepted, documented, not fixed: git author emails are
+  machine-local (`mike@…local`) — correcting them needs a history rewrite that would
+  invalidate the published v1.0.0/v1.0.1 tags, so they stay; disclosure is the local
+  username only.
+- Devpost: live form read (categories: Apps for your life / Work and productivity /
+  Developer tools / Education; <3-min PUBLIC YouTube video; deadline Tue Jul 21 5:00 PM
+  PT). Draft prep stopped exactly at the login screen — no authenticated session; the
+  agent does not enter credentials.

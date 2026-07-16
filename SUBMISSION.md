@@ -1,17 +1,26 @@
 # Build Week submission package — Presence
 
-Status: DRAFT — repo private, release pending final gates. Fields marked ⏳ are filled at
-release time; items marked 🧑 are Michael-only.
+Status: RELEASE PUBLISHED (2026-07-16) — GitHub Release v1.0.1 is live with artifacts and
+honest notes; repo description/topics set; clean-clone verification green. The ONE
+remaining publication step is Michael's visibility flip (Publication section). Items
+marked 🧑 are Michael-only.
 
 ## Facts
 
 - Project: **Presence** — native macOS privacy curtain driven by on-device presence
   detection, with GPT-5.6-compiled protection policies.
-- Repo: https://github.com/Solarthis/presence-macos (⏳ public at release)
-- Release: tag `v1.0.0` pushed (private remote). Artifact ready:
-  `dist/Presence-v1.0.0-macos-arm64.zip`
-  SHA-256 `0d50ad8b99c0990ecc1e7cd6dfc7773f95b0f421f00c7848f32f43fa5ba5aad4`
-  Clean-checkout gate passed (fresh clone → verify 173 PASS → signed build OK).
+- Repo: https://github.com/Solarthis/presence-macos (private until Michael's one-command
+  flip; description + topics already set)
+- Release: https://github.com/Solarthis/presence-macos/releases/tag/v1.0.1 —
+  "Presence v1.0.1 — Build Week release", published 2026-07-16 (becomes publicly visible
+  with the flip). Tag `v1.0.1` = commit `74a407c` (portable-build fix; app functionally
+  identical to the reviewed `v1.0.0` source tag, which remains untouched at `a44c341`).
+  Assets: `Presence-v1.0.1-macos-arm64.zip` +
+  SHA-256 `af78bcd72a9c986065edbf3dbb3e2186e201c1a0c673a368d2f19c08c40805b8` (.sha256
+  attached; download → `shasum -a 256 -c` round-trip verified OK).
+  Verification: **173 PASS / 0 FAIL / 1 honest SKIP** (fixture-vision, until Michael
+  captures local fixtures) + 5 source gates — re-confirmed from a fresh GitHub clone,
+  including both build paths (maintainer identity-signed and no-identity ad-hoc portable).
 - Codex PRIMARY Session ID: `019f6b6d-0524-7762-8d71-6a69a2f5e096`
   (state machine, curtain/safety/auth restore, camera pipeline, policy
   schema/validator/store/UI, Codex compiler, Flow F, event history — see
@@ -21,7 +30,12 @@ release time; items marked 🧑 are Michael-only.
 
 ## Track recommendation
 
-**Best Use of GPT-5.6 / Codex** (or the general track if that's absent). The pitch: the
+Live Devpost categories (checked 2026-07-16 on openai.devpost.com): *Apps for your life /
+Work and productivity / Developer tools / Education*. **Recommended: Apps for your life**
+(consumer app for everyday privacy). Live-form requirements: a **<3-minute PUBLIC YouTube
+demo** whose audio covers how Codex AND GPT-5.6 were used; the repo URL public (or private
+but shared with testing@devpost.com and build-week-event@openai.com); a README with setup
+instructions. Submissions close **Tue Jul 21, 5:00 PM PT**. The pitch: the
 model sits *outside* the trust boundary by architecture — GPT-5.6 writes policies in a
 closed JSON schema that must survive a hostile-input validator and explicit human
 approval before it can influence anything, and the entire core app was itself built by
@@ -32,7 +46,8 @@ Codex sessions. AI wrote the app; AI configures the app; AI can't escape the app
 ### Tagline (200 chars)
 
 Your Mac notices when you walk away — or when someone reads over your shoulder — and
-drops a privacy curtain only you can lift. On-device vision, Apple auth, GPT-5.6 policies.
+drops a privacy curtain that lifts only through Touch ID or your password. On-device
+vision, Apple auth, GPT-5.6 policies.
 
 ### Inspiration
 
@@ -44,7 +59,7 @@ frame anywhere, and without pretending to be a security product it isn't.
 ### What it does
 
 Presence watches the built-in camera entirely on-device (Apple Vision, ≤5 fps, frames
-discarded in memory). Walk away past your grace period and an opaque curtain covers every
+discarded in memory). Walk away past your grace period and a frosted curtain obscures every
 display; come back and only Touch ID or your password (Apple's LocalAuthentication) lifts
 it. It can also warn-and-cover when a second person is visible behind you. You configure
 it in plain English — "protect my screen when I walk away for 45 seconds" — and GPT-5.6
@@ -118,28 +133,46 @@ Narration + shots:
 drives the real state machine with the badge visible; restore falls back to the password
 sheet. Film that if the live path misbehaves on the day.
 
-## Publication (🧑 two commands — the agent prepared everything but will not change
-repo visibility or publish content itself)
+## Publication (🧑 ONE command — everything else is done)
+
+The GitHub Release v1.0.1 (artifacts + notes), repo description, and topics are already
+published. Changing repository visibility is an access-control action the agent will not
+perform, so the single remaining publication step is Michael's:
 
 ```bash
-cd ~/presence-macos
 gh repo edit Solarthis/presence-macos --visibility public --accept-visibility-change-consequences
-gh release create v1.0.0 dist/Presence-v1.0.0-macos-arm64.zip dist/Presence-v1.0.0-macos-arm64.zip.sha256 \
-  --title "Presence v1.0.0" --notes "Build Week release. 173 automated checks + 5 source gates green; clean-checkout verified. See README, PRIVACY, SECURITY."
 ```
 
-After running: paste the repo + release URLs into the Facts section above, then
-`git clone https://github.com/Solarthis/presence-macos.git` somewhere fresh and run
-`./verify.sh` once as the public-clone sanity check (the agent already verified the
-identical tree from a local clean clone).
+Afterwards (~2 min): open https://github.com/Solarthis/presence-macos in a private
+browser window — README, the v1.0.1 release, and both assets should be visible logged
+out; `gh repo view Solarthis/presence-macos --json visibility` should say "PUBLIC".
+The agent already verified a fresh GitHub clone end-to-end (verify 173 PASS, both build
+paths, checksum round-trip), so no further clone test is needed.
 
-## Final human checklist (🧑 all)
+## Final human checklist (🧑 all, in order — the single consolidated list)
 
-1. Grant camera permission (System dialog) and run one live walk-away + Touch ID restore.
-2. Capture fixture photos (empty room / one person / two people) via
-   `Presence.app --fixture-capture`; re-run `./verify.sh` (fixture-vision checks activate).
-3. Watch the curtain on both displays once; confirm ⌘Q and menu Pause behave.
-4. Film the demo per the shot list; upload to YouTube (unlisted is fine).
-5. Review README/PRIVACY/SECURITY once.
-6. Submit on Devpost (paste the copy above; attach repo URL, video URL, PRIMARY session
-   id) — final click is yours alone.
+0. **Publish**: run the one visibility command above; spot-check the public URL logged out.
+1. **Camera permission**: launch Presence (release zip or `./build.sh && open
+   Presence.app`), start monitoring, click **Allow** on the macOS camera dialog — approve
+   camera only, nothing else. Confirm the menu bar leaves "camera unavailable" and shows
+   MONITORING.
+2. **Touch ID / device-owner auth**: trigger the safe live curtain test, confirm the
+   genuine macOS LocalAuthentication sheet appears, authenticate with Touch ID — the
+   curtain must lift only on success. Cancel once to confirm the curtain stays. Confirm
+   ⌘⌥⇧Q quit and relaunch recovery.
+3. **Fixture capture**: run with `--fixture-capture` → empty room / one person / two
+   people. Fixtures stay local and gitignored, excluded from release artifacts. Re-run
+   `./verify.sh` — the fixture-vision SKIP activates; if the PASS count changes, update it
+   everywhere in this file and README.
+4. **Manual hardware checks**: walk-away; return; additional viewer; camera covered; low
+   light; external display (if available); escape sequence; force quit; emergency-disable
+   file (`~/.presence-disable`); relaunch safety; no-network mode.
+5. **Film + upload**: follow the demo shot list above (<3 min, audio must cover how Codex
+   AND GPT-5.6 were used); upload to YouTube as **Public** (Devpost requires public);
+   paste the URL here and into the Devpost draft.
+6. **Devpost**: sign in at openai.devpost.com (the agent stopped exactly at the login
+   screen — it cannot enter credentials), open the Build Week submission flow, create the
+   draft, paste the copy above plus repo URL, category "Apps for your life", video URL,
+   and the PRIMARY Codex Session ID `019f6b6d-0524-7762-8d71-6a69a2f5e096` in the required
+   field. Review, then the final Submit click is yours alone (or explicitly authorize the
+   agent to submit the completed draft).
