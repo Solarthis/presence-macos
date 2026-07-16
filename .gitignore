@@ -7,3 +7,4 @@ logs/*
 !logs/live-calls.log
 spikes/*.bin
 fixtures/
+dist/

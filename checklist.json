@@ -68,9 +68,9 @@
       "slice": 8,
       "description": "Review passes, docs, secret scan, publication, release, submission package",
       "tier": "agent",
-      "status": "todo",
-      "evidence": null,
-      "blocked_reason": null
+      "status": "human_required",
+      "evidence": "TESTING.md#s8",
+      "blocked_reason": "All agent work done (reviews, docs, scan, artifact, clean-checkout gate, tag). Visibility flip + public Release are access-control/publishing actions reserved for Michael \u2014 commands in SUBMISSION.md."
     },
     {
       "id": "H1",

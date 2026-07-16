@@ -13,10 +13,12 @@
 10. Two human checkpoints only; agent never clicks TCC dialogs, does Touch ID, films, or submits.
 
 ## Phase / position
-- Phase: SLICE 7 complete (Tier 2: additional-viewer UI, displaysOff, Flow F, event history).
-  169 checks green. Live-call budget: 4 of 10 used.
-- Next concrete action: slice 8 — independent reviews, docs, secret scan, release prep (repo
-  stays private until gates pass).
+- Phase: SLICE 8 agent work COMPLETE. Independent review done (5 confirmed findings, all
+  fixed; 5 refuted). Docs, secret scan, v1.0.0 tag, release artifact + checksum, and
+  clean-checkout gate all green (173 checks). Live-call budget: 4 of 10 used.
+- Next concrete action: HUMAN — run the two publication commands in SUBMISSION.md (visibility
+  flip + gh release), then the final human checklist (camera grant, fixtures, Touch ID, demo,
+  Devpost). Agent will not change repo visibility or publish content.
 
 ## Verified environment (preflight 2026-07-16 09:51 -04)
 - macOS 26.4 (25E246) arm64; CLT-only, Swift 6.3; NO Xcode/xcodebuild/XCTest.

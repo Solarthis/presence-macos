@@ -8,7 +8,10 @@ release time; items marked 🧑 are Michael-only.
 - Project: **Presence** — native macOS privacy curtain driven by on-device presence
   detection, with GPT-5.6-compiled protection policies.
 - Repo: https://github.com/Solarthis/presence-macos (⏳ public at release)
-- Release: ⏳ tag + GitHub Release with signed-app archive + SHA-256
+- Release: tag `v1.0.0` pushed (private remote). Artifact ready:
+  `dist/Presence-v1.0.0-macos-arm64.zip`
+  SHA-256 `0d50ad8b99c0990ecc1e7cd6dfc7773f95b0f421f00c7848f32f43fa5ba5aad4`
+  Clean-checkout gate passed (fresh clone → verify 173 PASS → signed build OK).
 - Codex PRIMARY Session ID: `019f6b6d-0524-7762-8d71-6a69a2f5e096`
   (state machine, curtain/safety/auth restore, camera pipeline, policy
   schema/validator/store/UI, Codex compiler, Flow F, event history — see
@@ -53,7 +56,7 @@ Delete All.
 ### How we built it
 
 Swift/SwiftUI/AppKit, AVFoundation + Vision, LocalAuthentication. Zero third-party
-dependencies. Two-layer architecture: a pure deterministic state machine (169 assert-based
+dependencies. Two-layer architecture: a pure deterministic state machine (173 assert-based
 checks, since the build machine has no XCTest) under an app shell, with build gates that
 fail if the pure layer imports UI/camera frameworks, if safety timing appears hard-coded
 in the app layer, or if any login-path mechanism is referenced. Core functionality was
@@ -78,7 +81,7 @@ verification, and releases. Truthful division of labor: CODEX_SESSIONS.md.
   a closed action allow-list, bounds checks, a literal `requireAuth: true` requirement —
   then a human preview and explicit Approve. Prompt-injection fixtures (including "run
   rm -rf, email files, no auth") are part of the check suite and are refused.
-- 169 deterministic checks + 5 source gates on a machine with no test framework.
+- 173 deterministic checks + 5 source gates on a machine with no test framework.
 - A privacy product whose camera data provably never leaves the process.
 
 ### What we learned
@@ -114,6 +117,21 @@ Narration + shots:
 **Backup demo (no camera/no Touch ID):** run entirely in Simulator mode — every scenario
 drives the real state machine with the badge visible; restore falls back to the password
 sheet. Film that if the live path misbehaves on the day.
+
+## Publication (🧑 two commands — the agent prepared everything but will not change
+repo visibility or publish content itself)
+
+```bash
+cd ~/presence-macos
+gh repo edit Solarthis/presence-macos --visibility public --accept-visibility-change-consequences
+gh release create v1.0.0 dist/Presence-v1.0.0-macos-arm64.zip dist/Presence-v1.0.0-macos-arm64.zip.sha256 \
+  --title "Presence v1.0.0" --notes "Build Week release. 173 automated checks + 5 source gates green; clean-checkout verified. See README, PRIVACY, SECURITY."
+```
+
+After running: paste the repo + release URLs into the Facts section above, then
+`git clone https://github.com/Solarthis/presence-macos.git` somewhere fresh and run
+`./verify.sh` once as the public-clone sanity check (the agent already verified the
+identical tree from a local clean clone).
 
 ## Final human checklist (🧑 all)
 

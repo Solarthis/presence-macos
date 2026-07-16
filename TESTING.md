@@ -130,3 +130,18 @@ block here: exact command, verbatim trimmed output, commit hash it ran against.
   gitignored-evidence citations; logs/live-calls.log now tracked).
 - `./verify.sh` → 173 PASS, 0 FAIL, "VERIFY: ALL GATES GREEN" (count re-run after writing
   this block, per the correction discipline above).
+
+## S8 — reviews, docs, release preparation (2026-07-16)
+- Independent review: 4-dimension / 24-agent adversarial workflow — 5 confirmed findings,
+  all fixed (live-test confinement, honest displaysOff preview, S3 count correction,
+  evidence-citation fixes); 5 candidate findings refuted with code evidence.
+- Docs written from code: README.md, PRIVACY.md, SECURITY.md, docs/architecture.md,
+  SUBMISSION.md (Devpost copy, demo shot list, human checklist).
+- Full-history secret scan: CLEAN. No images/cert material tracked. License verified (MIT).
+- Release artifact: dist/Presence-v1.0.0-macos-arm64.zip,
+  SHA-256 0d50ad8b99c0990ecc1e7cd6dfc7773f95b0f421f00c7848f32f43fa5ba5aad4.
+- Clean-checkout gate: fresh `git clone` → ./verify.sh 173 PASS ALL GATES GREEN →
+  ./build.sh signed app OK.
+- Tag v1.0.0 created and pushed to the (private) remote.
+- NOT done by the agent, by policy: repo visibility flip and public Release creation are
+  access-control/publishing actions reserved for Michael — exact commands in SUBMISSION.md.
