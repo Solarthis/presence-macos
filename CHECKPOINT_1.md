@@ -31,3 +31,8 @@ what appears → what NOT to approve → how to confirm.
    you alone / you plus a second person (if available — also tell me now whether a second person
    will be available for filming on July 19–21, so the demo script can branch).
 5. **Reply CONTINUE** — I resume at the first unchecked checklist item.
+
+---
+UPDATE 2026-07-16 (slice 7 complete): the app is feature-complete and camera-ready.
+The consolidated, current human checklist now lives in SUBMISSION.md ("Final human
+checklist") — camera grant, fixture photos, live Touch ID, demo filming, Devpost submit.

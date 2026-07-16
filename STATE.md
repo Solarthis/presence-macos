@@ -13,10 +13,10 @@
 10. Two human checkpoints only; agent never clicks TCC dialogs, does Touch ID, films, or submits.
 
 ## Phase / position
-- Phase: SLICE 7 complete (Tier 2: additional-viewer UI, displaysOff, Flow F, event history). 169 checks green.
-  146 checks green. Live-call budget: 4 of 10 used.
-- Next concrete action: slice 8 — independent reviews, docs, secret scan, release prep (repo stays private until gates pass).
-  per specs/slice-07.md to Codex PRIMARY session.
+- Phase: SLICE 7 complete (Tier 2: additional-viewer UI, displaysOff, Flow F, event history).
+  169 checks green. Live-call budget: 4 of 10 used.
+- Next concrete action: slice 8 — independent reviews, docs, secret scan, release prep (repo
+  stays private until gates pass).
 
 ## Verified environment (preflight 2026-07-16 09:51 -04)
 - macOS 26.4 (25E246) arm64; CLT-only, Swift 6.3; NO Xcode/xcodebuild/XCTest.
