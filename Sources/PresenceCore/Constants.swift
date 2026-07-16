@@ -48,4 +48,24 @@ public extension MachineConfig {
     static var scriptedDemo: MachineConfig {
         MachineConfig(graceSeconds: 8, launchGuardSeconds: 0, additionalViewerEnabled: true)
     }
+
+    /// Applies only validated policy controls while preserving every production safety default.
+    static func production(applying policy: Policy?) -> MachineConfig {
+        var config = MachineConfig.production
+        guard let policy else { return config }
+
+        for rule in policy.rules {
+            switch rule.trigger {
+            case .absence:
+                config.graceSeconds = rule.graceSeconds
+            case .additionalViewer:
+                config.additionalViewerEnabled = true
+                if let minPersons = rule.minPersons {
+                    config.additionalViewerMinPersons = minPersons
+                }
+                config.additionalViewerSustainSeconds = rule.graceSeconds
+            }
+        }
+        return config
+    }
 }

@@ -13,8 +13,8 @@
 10. Two human checkpoints only; agent never clicks TCC dialogs, does Touch ID, films, or submits.
 
 ## Phase / position
-- Phase: SLICE 3 complete (curtain + safety + LA restore, incl. timing-isolation fix). 94 checks green.
-- Next concrete action: delegate slice 4 (policy schema, validation, storage, preview/approval) to Codex PRIMARY session.
+- Phase: SLICE 4 complete (policy schema v1 + validator + store + approve UI + templates). 127 checks green.
+- Next concrete action: delegate slice 5 (camera/perception via AVFoundation+Vision) to Codex PRIMARY session.
 
 ## Verified environment (preflight 2026-07-16 09:51 -04)
 - macOS 26.4 (25E246) arm64; CLT-only, Swift 6.3; NO Xcode/xcodebuild/XCTest.

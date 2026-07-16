@@ -24,7 +24,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let runtime = RuntimeCoordinator(
             menuBarState: menuBarState,
-            liveTestEnabled: liveTestEnabled
+            liveTestEnabled: liveTestEnabled,
+            policyStore: .shared
         )
         coordinator = runtime
 
@@ -46,6 +47,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 struct PresenceApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var menuBarState = MenuBarState.shared
+    @StateObject private var policyStore = PolicyStore.shared
 
     var body: some Scene {
         MenuBarExtra {
@@ -76,6 +78,7 @@ struct PresenceApp: App {
                         }
                     }
                 }
+                PolicyMenuButton()
                 Divider()
                 Button("Quit Presence") { NSApp.terminate(nil) }
                     .keyboardShortcut("q")
@@ -93,6 +96,20 @@ struct PresenceApp: App {
             }
             .padding(24)
             .frame(width: 360)
+        }
+
+        Window("Policies", id: "policies") {
+            PolicyWindow(store: policyStore)
+        }
+    }
+}
+
+private struct PolicyMenuButton: View {
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        Button("Policies…") {
+            openWindow(id: "policies")
         }
     }
 }

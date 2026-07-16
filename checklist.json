@@ -32,8 +32,8 @@
       "slice": 4,
       "description": "Policy schema + 9-step validation + storage + preview/approve UI + TemplatePolicyCompiler",
       "tier": "agent",
-      "status": "todo",
-      "evidence": null,
+      "status": "agent_complete",
+      "evidence": "TESTING.md#s4",
       "blocked_reason": null
     },
     {

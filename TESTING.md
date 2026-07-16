@@ -39,3 +39,20 @@ block here: exact command, verbatim trimmed output, commit hash it ran against.
 - `./verify.sh` → 94 PASS, 0 FAIL, "VERIFY: ALL GATES GREEN".
 - Human-required remainder (H items, not claimed): live Touch ID prompt, real curtain visuals,
   camera TCC grant.
+
+## S4 — policy schema v1, validator, storage, approve UI, templates (2026-07-16)
+- Implemented by Codex gpt-5.6-sol (resumed PRIMARY session 019f6b6d-0524-7762-8d71-6a69a2f5e096):
+  Policy.swift (closed v1 schema), PolicyValidator (recursive raw-key allow-lists at every
+  nesting level, typed rejections, never auto-repairs), PolicyPreview (honest inert-action
+  labels), TemplateCompiler (deterministic, output re-validated), ExamplePolicies (3, all
+  validate), PolicyStore (atomic writes, raw revalidation on every load, one active id),
+  PolicyWindow (compile → preview → explicit Approve/Reject; only Approve persists).
+- Orchestrator review confirmed: MachineConfig.production(applying:) overrides ONLY
+  graceSeconds / additionalViewer fields — launchGuardSeconds untouchable; scripted runs
+  ignore policies; policy changes while curtained defer until successful LAContext restore;
+  requireAuth must be literal true (false and absent both rejected); never-hide bundle-id
+  list compared case-insensitively.
+- Hostile fixtures all rejected with typed reasons: unknown keys (root/rule/restoration),
+  grace 1 and 9999, runShell, lockScreen, requireAuth false/absent, schemaVersion 2,
+  prose-wrapped JSON, duplicate triggers, hideApps without ids, empty actions, Terminal id.
+- `./verify.sh` → 127 PASS, 0 FAIL, "VERIFY: ALL GATES GREEN".

@@ -9,18 +9,29 @@ final class RuntimeCoordinator: NSObject {
     private let curtainController: CurtainController
     private let authGate: AuthGate
     private let eventStore: EventStore
+    private let policyStore: PolicyStore
     private var tickTimer: Timer?
     private var liveTestDismissTimer: Timer?
     private var lastConfidenceBand: ConfidenceBand?
     private var pendingRestoreAction: String?
     private var liveTestEnabled: Bool
     private var observersInstalled = false
+    private var isScriptedRun = false
+    private var policyRefreshPending = false
 
-    init(menuBarState: MenuBarState, liveTestEnabled: Bool) {
+    init(
+        menuBarState: MenuBarState,
+        liveTestEnabled: Bool,
+        policyStore: PolicyStore = .shared
+    ) {
         let launchTime = ProcessInfo.processInfo.systemUptime
-        machine = Machine(launchTime: launchTime)
+        machine = Machine(
+            config: .production(applying: policyStore.activePolicy),
+            launchTime: launchTime
+        )
         self.menuBarState = menuBarState
         self.liveTestEnabled = liveTestEnabled
+        self.policyStore = policyStore
         eventStore = EventStore()
 
         var authenticationRequest: (() -> Void)?
@@ -43,10 +54,14 @@ final class RuntimeCoordinator: NSObject {
         authenticated = { [weak self] in self?.authenticationSucceeded() }
         rejected = { [weak self] in self?.authenticationRejected() }
         failureLimitReached = { [weak self] in self?.curtainController.showQuitButton() }
+        policyStore.onActivePolicyChanged = { [weak self] policy in
+            self?.activePolicyChanged(policy)
+        }
         menuBarState.setLiveTest(enabled: liveTestEnabled)
     }
 
     func start(source: PresenceSource?) {
+        isScriptedRun = false
         installObservers()
         startTickTimer()
 
@@ -56,10 +71,11 @@ final class RuntimeCoordinator: NSObject {
             menuBarState.showNoCameraPaused()
             return
         }
-        begin(source: source, config: .production)
+        begin(source: source, config: .production(applying: policyStore.activePolicy))
     }
 
     func startScripted(scenario: ScriptedSource.Scenario) {
+        isScriptedRun = true
         installObservers()
         startTickTimer()
         begin(source: ScriptedSource(scenario: scenario), config: .scriptedDemo)
@@ -74,6 +90,7 @@ final class RuntimeCoordinator: NSObject {
         liveTestDismissTimer = nil
         authGate.cancel()
         curtainController.dismiss()
+        policyStore.onActivePolicyChanged = nil
         removeObservers()
     }
 
@@ -93,6 +110,7 @@ final class RuntimeCoordinator: NSObject {
     }
 
     func simulate(_ scenario: ScriptedSource.Scenario) {
+        isScriptedRun = true
         activeSource?.stop()
         authGate.cancel()
         liveTestDismissTimer?.invalidate()
@@ -149,6 +167,7 @@ final class RuntimeCoordinator: NSObject {
                 let action = actionTaken(for: kind)
                 eventStore.append(
                     kind,
+                    policyId: isScriptedRun ? nil : policyStore.activePolicyID?.uuidString,
                     confidenceBand: lastConfidenceBand,
                     actionTaken: action
                 )
@@ -185,6 +204,10 @@ final class RuntimeCoordinator: NSObject {
 
     private func authenticationSucceeded() {
         process(.restoreAuthenticated(t: now()))
+        if policyRefreshPending {
+            policyRefreshPending = false
+            activePolicyChanged(policyStore.activePolicy)
+        }
         if activeSource == nil {
             process(.pause(t: now()))
         }
@@ -193,6 +216,7 @@ final class RuntimeCoordinator: NSObject {
     private func authenticationRejected() {
         eventStore.append(
             .restoreRejected,
+            policyId: isScriptedRun ? nil : policyStore.activePolicyID?.uuidString,
             confidenceBand: lastConfidenceBand,
             actionTaken: "authentication-rejected"
         )
@@ -279,6 +303,25 @@ final class RuntimeCoordinator: NSObject {
         process(event)
         if curtainWasRaised {
             process(.manualProtect(t: now()))
+        }
+    }
+
+    private func activePolicyChanged(_ policy: Policy?) {
+        guard !isScriptedRun else { return }
+        guard !curtainController.isRaised else {
+            policyRefreshPending = true
+            return
+        }
+
+        let config = MachineConfig.production(applying: policy)
+        if let source = activeSource {
+            source.stop()
+            begin(source: source, config: config)
+        } else {
+            let launchTime = now()
+            machine = Machine(config: config, launchTime: launchTime)
+            _ = machine.handle(.pause(t: launchTime))
+            menuBarState.showNoCameraPaused()
         }
     }
 
