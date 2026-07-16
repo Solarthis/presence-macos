@@ -90,3 +90,17 @@ block here: exact command, verbatim trimmed output, commit hash it ran against.
   committed as fixtures-codex/smoke-slice-06.txt and validated by Checks
   (codex-output-smoke-slice-06-extracts-last-json / -validates both PASS).
 - `./verify.sh` → 146 PASS, 0 FAIL, "VERIFY: ALL GATES GREEN".
+
+## S7 — additional-viewer UI, displaysOff, Flow F, event history (2026-07-16)
+- Implemented by Codex gpt-5.6-sol (resumed PRIMARY session 019f6b6d-0524-7762-8d71-6a69a2f5e096):
+  additional-viewer curtain title swap + HUD accent (config wiring existed since slice 4);
+  DisplaysOffExecutor double-gated (policy action AND default-OFF "Allow turning displays off"
+  toggle; absolute /usr/bin/pmset path; honest lock-caveat copy; executor retained on attempt
+  3 of 3); Flow F "Explain recent events…" — sanitized payload from the typed record struct in
+  pure PresenceCore (closed fields, policy names replace ids, hostile extra fields structurally
+  impossible), "What will be sent" preview with explicit Send, shared 10-call budget, response
+  display-only; Event History window + Delete All wired to EventStore.deleteAll() with
+  empty-store check; onboarding (7.4) honestly skipped per cut ladder after displaysOff
+  consumed the attempt budget.
+- App hiding remains CUT (D7) — structural check added.
+- `./verify.sh` → 169 PASS, 0 FAIL, 1 honest SKIP; signed Presence.app builds.

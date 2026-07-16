@@ -34,6 +34,10 @@ final class PolicyStore: ObservableObject {
         return policies.first(where: { $0.id == activePolicyID })?.policy
     }
 
+    var policyNamesByID: [String: String] {
+        Dictionary(uniqueKeysWithValues: policies.map { ($0.id.uuidString, $0.policy.name) })
+    }
+
     private static let activePolicyDefaultsKey = "activePolicyID"
     private let fileURL: URL
     private let defaults: UserDefaults

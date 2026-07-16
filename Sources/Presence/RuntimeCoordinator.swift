@@ -11,6 +11,7 @@ final class RuntimeCoordinator: NSObject {
     private let eventStore: EventStore
     private let policyStore: PolicyStore
     private let hudPanel: HUDPanel
+    private let displaysOffExecutor: DisplaysOffExecutor
     private let fixtureCaptureEnabled: Bool
     private var tickTimer: Timer?
     private var liveTestDismissTimer: Timer?
@@ -40,12 +41,13 @@ final class RuntimeCoordinator: NSObject {
         self.liveTestEnabled = liveTestEnabled
         self.policyStore = policyStore
         hudPanel = HUDPanel()
+        displaysOffExecutor = DisplaysOffExecutor()
 #if DEBUG
         self.fixtureCaptureEnabled = fixtureCaptureEnabled
 #else
         self.fixtureCaptureEnabled = false
 #endif
-        eventStore = EventStore()
+        eventStore = EventStore.shared
 
         var authenticationRequest: (() -> Void)?
         curtainController = CurtainController {
@@ -221,7 +223,7 @@ final class RuntimeCoordinator: NSObject {
         }
         let cameraEvent = activeSource is CameraSource
         let effects = machine.handle(event)
-        execute(effects)
+        execute(effects, triggeredBy: event)
         menuBarState.update(from: machine.state, config: machine.config, now: now())
         if cameraEvent {
             switch event {
@@ -239,11 +241,29 @@ final class RuntimeCoordinator: NSObject {
         updateHUD()
     }
 
-    private func execute(_ effects: [Effect]) {
+    private func execute(_ effects: [Effect], triggeredBy event: PresenceEvent) {
+        let protectionKind = effects.compactMap { effect -> EventKind? in
+            guard case let .logEvent(kind) = effect,
+                  kind == .curtainRaised || kind == .additionalViewer else {
+                return nil
+            }
+            return kind
+        }.first
+
         for effect in effects {
             switch effect {
             case .raiseCurtain:
-                curtainController.raise()
+                let title = protectionKind == .additionalViewer
+                    ? "Another person may be able to view your screen"
+                    : "Presence protected this workspace"
+                curtainController.raise(title: title)
+                if !isScriptedRun,
+                   let trigger = policyTrigger(for: protectionKind, event: event) {
+                    displaysOffExecutor.executeIfAllowed(
+                        policy: policyStore.activePolicy,
+                        trigger: trigger
+                    )
+                }
                 scheduleLiveTestDismissalIfNeeded()
 
             case .dismissCurtain:
@@ -269,6 +289,26 @@ final class RuntimeCoordinator: NSObject {
                     actionTaken: action
                 )
             }
+        }
+    }
+
+    private func policyTrigger(
+        for kind: EventKind?,
+        event: PresenceEvent
+    ) -> PolicyTrigger? {
+        switch event {
+        case .detection, .tick:
+            break
+        default:
+            return nil
+        }
+        switch kind {
+        case .additionalViewer:
+            return .additionalViewer
+        case .curtainRaised:
+            return .absence
+        default:
+            return nil
         }
     }
 

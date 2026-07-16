@@ -59,8 +59,8 @@
       "slice": 7,
       "description": "Tier 2 in order: additional-viewer, app hiding (post-spike), displaysOff, Flow F, onboarding",
       "tier": "agent",
-      "status": "todo",
-      "evidence": null,
+      "status": "agent_complete",
+      "evidence": "TESTING.md#s7",
       "blocked_reason": null
     },
     {

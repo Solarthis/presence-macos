@@ -49,6 +49,7 @@ struct PresenceApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var menuBarState = MenuBarState.shared
     @StateObject private var policyStore = PolicyStore.shared
+    @StateObject private var eventStore = EventStore.shared
 
     var body: some Scene {
         MenuBarExtra {
@@ -103,6 +104,11 @@ struct PresenceApp: App {
                     }
                 }
                 PolicyMenuButton()
+                EventHistoryMenuButton()
+                ExplainRecentEventsButton(
+                    eventStore: eventStore,
+                    policyStore: policyStore
+                )
                 Divider()
                 Button("Quit Presence") { NSApp.terminate(nil) }
                     .keyboardShortcut("q")
@@ -112,18 +118,15 @@ struct PresenceApp: App {
         }
 
         Settings {
-            VStack(spacing: 8) {
-                Text("Presence Settings")
-                    .font(.headline)
-                Text("Monitoring controls are available from the menu bar.")
-                    .foregroundStyle(.secondary)
-            }
-            .padding(24)
-            .frame(width: 360)
+            PresenceSettingsView()
         }
 
         Window("Policies", id: "policies") {
             PolicyWindow(store: policyStore)
+        }
+
+        Window("Event History", id: "event-history") {
+            EventHistoryWindow(store: eventStore)
         }
     }
 }
@@ -179,5 +182,36 @@ private struct PolicyMenuButton: View {
         Button("Policies…") {
             openWindow(id: "policies")
         }
+    }
+}
+
+private struct EventHistoryMenuButton: View {
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        Button("Event History…") {
+            openWindow(id: "event-history")
+        }
+    }
+}
+
+private struct PresenceSettingsView: View {
+    @AppStorage(DisplaySleepSettings.allowDisplaysOffKey) private var allowDisplaysOff = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Presence Settings")
+                .font(.headline)
+            Text("Monitoring controls are available from the menu bar.")
+                .foregroundStyle(.secondary)
+            Divider()
+            Toggle("Allow turning displays off", isOn: $allowDisplaysOff)
+            Text("Turns off displays. Your Mac locks only if 'Require password immediately' is enabled — Presence cannot verify this setting.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(24)
+        .frame(width: 460)
     }
 }

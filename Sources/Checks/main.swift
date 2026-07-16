@@ -21,6 +21,8 @@ runSafetyConfigChecks()
 runPolicyChecks()
 runRuntimeIsolationChecks()
 runCodexOutputFixtureChecks()
+runEventRecordChecks()
+runSliceSevenStructuralChecks()
 runFixtureVisionChecks()
 
 if failures > 0 {

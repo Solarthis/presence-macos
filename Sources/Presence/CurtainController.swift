@@ -61,12 +61,16 @@ private final class CurtainContentView: NSVisualEffectView {
     private let quitAction: () -> Void
     private let quitButton: NSButton
 
-    init(unlockAction: @escaping () -> Void, quitAction: @escaping () -> Void) {
+    init(
+        title: String,
+        unlockAction: @escaping () -> Void,
+        quitAction: @escaping () -> Void
+    ) {
         self.unlockAction = unlockAction
         self.quitAction = quitAction
         quitButton = NSButton(title: "Quit Presence", target: nil, action: nil)
         super.init(frame: .zero)
-        buildInterface()
+        buildInterface(title: title)
     }
 
     required init?(coder: NSCoder) {
@@ -85,7 +89,7 @@ private final class CurtainContentView: NSVisualEffectView {
         quitAction()
     }
 
-    private func buildInterface() {
+    private func buildInterface(title titleText: String) {
         material = .hudWindow
         blendingMode = .behindWindow
         state = .active
@@ -95,7 +99,7 @@ private final class CurtainContentView: NSVisualEffectView {
         icon.contentTintColor = .white
         icon.symbolConfiguration = NSImage.SymbolConfiguration(pointSize: 46, weight: .medium)
 
-        let title = NSTextField(labelWithString: "Presence protected this workspace")
+        let title = NSTextField(labelWithString: titleText)
         title.font = .systemFont(ofSize: 25, weight: .semibold)
         title.textColor = .white
         title.alignment = .center
@@ -145,12 +149,14 @@ final class CurtainController {
     private var windows: [CurtainWindow] = []
     private var contentViews: [CurtainContentView] = []
     private let requestAuthentication: () -> Void
+    private var title = "Presence protected this workspace"
 
     init(requestAuthentication: @escaping () -> Void) {
         self.requestAuthentication = requestAuthentication
     }
 
-    func raise() {
+    func raise(title: String = "Presence protected this workspace") {
+        self.title = title
         isRaised = true
         rebuildWindows()
     }
@@ -190,6 +196,7 @@ final class CurtainController {
             window.requestQuit = { NSApp.terminate(nil) }
 
             let content = CurtainContentView(
+                title: title,
                 unlockAction: { [weak self] in self?.requestAuthentication() },
                 quitAction: { NSApp.terminate(nil) }
             )

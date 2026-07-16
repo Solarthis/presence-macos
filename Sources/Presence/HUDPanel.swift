@@ -62,6 +62,7 @@ final class HUDPanel {
     ) {
         stateLabel.stringValue = stateText(for: state, config: config, now: now)
         peopleLabel.stringValue = "People: \(personCount.map(String.init) ?? "—")"
+        peopleLabel.textColor = (personCount ?? 0) >= 2 ? .controlAccentColor : .labelColor
         confidenceLabel.stringValue = "Confidence: \(confidenceBand?.rawValue.uppercased() ?? "—")"
         if let scenarioName {
             scenarioLabel.stringValue = "Scenario: \(scenarioName)"
