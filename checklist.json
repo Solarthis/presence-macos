@@ -50,8 +50,8 @@
       "slice": 6,
       "description": "Flow E Rung 2 (CodexPolicyCompiler) + committed fixtures",
       "tier": "agent",
-      "status": "todo",
-      "evidence": null,
+      "status": "agent_complete",
+      "evidence": "TESTING.md#s6",
       "blocked_reason": null
     },
     {

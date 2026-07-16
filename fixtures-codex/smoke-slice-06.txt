@@ -1,0 +1,52 @@
+OpenAI Codex v0.144.5
+--------
+workdir: /Users/mike/presence-macos
+model: gpt-5.6-sol
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: high
+reasoning summaries: none
+session id: 019f6bf2-5a78-7382-a1b3-d618f7fd707c
+--------
+user
+Convert a plain-English Presence privacy request into policy schema v1.
+
+Output ONLY a single JSON object, no prose, no markdown fences.
+
+The complete schema is:
+{
+  "schemaVersion": 1,
+  "name": string,
+  "rules": [
+    {
+      "trigger": "absence" | "additionalViewer",
+      "graceSeconds": number from 2 through 600,
+      "minPersons": integer at least 2, required only for "additionalViewer",
+      "minConfidence": number from 0.3 through 1.0, optional and defaults to 0.6,
+      "actions": non-empty array containing only "curtain", "hideApps", or "displaysOff",
+      "hideAppBundleIds": array of bundle-ID strings, required only when "hideApps" is present
+    }
+  ],
+  "restoration": {"requireAuth": true}
+}
+
+Unknown keys are forbidden. There may be at most one rule per trigger. Never put
+minPersons on an absence rule. Never put hideAppBundleIds on a rule without hideApps.
+Never use com.apple.terminal, com.googlecode.iterm2, or com.microsoft.vscode in
+hideAppBundleIds. restoration.requireAuth must always be true.
+
+Example request: Protect my screen when I walk away for 30 seconds
+Example output: {"schemaVersion":1,"name":"Walk-away protection","rules":[{"trigger":"absence","graceSeconds":30,"minConfidence":0.6,"actions":["curtain"]}],"restoration":{"requireAuth":true}}
+
+Example request: Raise the curtain when another person is visible for 5 seconds
+Example output: {"schemaVersion":1,"name":"Shoulder privacy","rules":[{"trigger":"additionalViewer","graceSeconds":5,"minPersons":2,"minConfidence":0.6,"actions":["curtain"]}],"restoration":{"requireAuth":true}}
+
+USER REQUEST:
+protect my screen when I walk away for 45 seconds
+
+codex
+{"schemaVersion":1,"name":"Walk-away protection","rules":[{"trigger":"absence","graceSeconds":45,"minConfidence":0.6,"actions":["curtain"]}],"restoration":{"requireAuth":true}}
+tokens used
+7,950
+{"schemaVersion":1,"name":"Walk-away protection","rules":[{"trigger":"absence","graceSeconds":45,"minConfidence":0.6,"actions":["curtain"]}],"restoration":{"requireAuth":true}}

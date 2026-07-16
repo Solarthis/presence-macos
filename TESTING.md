@@ -74,3 +74,19 @@ block here: exact command, verbatim trimmed output, commit hash it ran against.
   fixtures), "VERIFY: ALL GATES GREEN".
 - Human-required remainder: camera TCC grant, fixture photos (empty-room/one-person/
   two-people), live Touch ID, curtain visual review — CHECKPOINT_1.md.
+
+## S6 — Flow E Rung 2: CodexPolicyCompiler (2026-07-16)
+- Implemented by Codex gpt-5.6-sol (resumed PRIMARY session 019f6b6d-0524-7762-8d71-6a69a2f5e096)
+  with ZERO live calls during implementation: CodexPolicyCompiler (explicit binary discovery,
+  Process with argument array — no shell; `codex exec --sandbox read-only -`; 120 s timeout,
+  async + cancel), extractLastJSONObject pure in PresenceCore (string-aware brace matching,
+  typed failures), single retry with validator reason, hard 10-call budget (UserDefaults +
+  logs/live-calls.log) with honest template fallback, PolicyWindow .codexCLI mode.
+- Orchestrator review confirmed: model output is untrusted — every compile flows through the
+  IDENTICAL PolicyValidator from slice 4; no relaxed path exists.
+- Orchestrator ran the one live smoke compile (session 019f6bf2-5a78-7382-a1b3-d618f7fd707c,
+  logged in logs/live-calls.log; total live calls 4 of 10): "protect my screen when I walk away
+  for 45 seconds" → valid absence policy (grace 45, curtain, requireAuth true); raw transcript
+  committed as fixtures-codex/smoke-slice-06.txt and validated by Checks
+  (codex-output-smoke-slice-06-extracts-last-json / -validates both PASS).
+- `./verify.sh` → 146 PASS, 0 FAIL, "VERIFY: ALL GATES GREEN".

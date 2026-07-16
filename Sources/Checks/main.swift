@@ -20,6 +20,7 @@ runStateMachineChecks()
 runSafetyConfigChecks()
 runPolicyChecks()
 runRuntimeIsolationChecks()
+runCodexOutputFixtureChecks()
 runFixtureVisionChecks()
 
 if failures > 0 {

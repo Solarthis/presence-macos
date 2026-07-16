@@ -13,10 +13,10 @@
 10. Two human checkpoints only; agent never clicks TCC dialogs, does Touch ID, films, or submits.
 
 ## Phase / position
-- Phase: SLICE 5 complete (camera pipeline + HUD + simulator mode). 131 checks green, 1 honest
-  SKIP (fixture-vision awaits human fixtures).
-- Next concrete action: delegate slice 6 (Codex policy compiler integration, Flow E Rung 2) to
-  Codex PRIMARY session.
+- Phase: SLICE 6 complete (CodexPolicyCompiler, Flow E Rung 2 proven live end-to-end).
+  146 checks green. Live-call budget: 4 of 10 used.
+- Next concrete action: delegate slice 7 (event history + delete-all, accessibility polish)
+  per specs/slice-07.md to Codex PRIMARY session.
 
 ## Verified environment (preflight 2026-07-16 09:51 -04)
 - macOS 26.4 (25E246) arm64; CLT-only, Swift 6.3; NO Xcode/xcodebuild/XCTest.

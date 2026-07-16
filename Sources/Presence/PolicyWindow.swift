@@ -3,9 +3,17 @@ import SwiftUI
 
 enum PolicyCompilerMode: String, CaseIterable, Identifiable {
     case template
+    case codexCLI
 
     var id: String { rawValue }
-    var label: String { "Built-in templates" }
+    var label: String {
+        switch self {
+        case .template:
+            return "Built-in templates"
+        case .codexCLI:
+            return "Compile with GPT-5.6 (via your Codex plan)"
+        }
+    }
 }
 
 struct PolicyWindow: View {
@@ -18,6 +26,8 @@ struct PolicyWindow: View {
     @State private var previewJSON = ""
     @State private var examples: [String] = []
     @State private var errorText: String?
+    @State private var activeCodexCompiler: CodexPolicyCompiler?
+    @State private var isCodexCompiling = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -73,6 +83,18 @@ struct PolicyWindow: View {
         }
         .padding(20)
         .frame(minWidth: 620, minHeight: 420)
+        .sheet(isPresented: $isCodexCompiling) {
+            VStack(spacing: 16) {
+                ProgressView()
+                    .controlSize(.large)
+                Text("Compiling policy…")
+                Button("Cancel", role: .cancel) {
+                    activeCodexCompiler?.cancel()
+                }
+            }
+            .padding(32)
+            .interactiveDismissDisabled()
+        }
     }
 
     @ViewBuilder
@@ -138,6 +160,34 @@ struct PolicyWindow: View {
                 examples = suggestions
             case let .rejected(error):
                 errorText = error.reason
+            }
+        case .codexCLI:
+            let compiler = CodexPolicyCompiler()
+            activeCodexCompiler = compiler
+            isCodexCompiling = true
+            compiler.compile(text) { result in
+                isCodexCompiling = false
+                activeCodexCompiler = nil
+                switch result {
+                case let .compiled(policy, json):
+                    previewPolicy = policy
+                    previewJSON = json
+                case let .fallback(message, templateResult):
+                    errorText = message
+                    switch templateResult {
+                    case let .compiled(policy, json):
+                        previewPolicy = policy
+                        previewJSON = json
+                    case let .unrecognized(suggestions):
+                        examples = suggestions
+                    case let .rejected(error):
+                        errorText = "\(message)\n\(error.reason)"
+                    }
+                case let .failed(reason):
+                    errorText = reason
+                case .cancelled:
+                    break
+                }
             }
         }
     }
