@@ -18,9 +18,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             arguments: CommandLine.arguments,
             validScenarios: Set(ScriptedSource.Scenario.allCases.map(\.rawValue))
         )
-        // This bypass is confined to an explicit scripted DEBUG run. Supplying
-        // --live-test to an ordinary launch can never weaken authentication.
+        // DEBUG builds only: both simulator and live-test flags are required, and
+        // a live-test session can never enter camera monitoring.
+#if DEBUG
         let liveTestEnabled = options.liveTestEnabled
+#else
+        let liveTestEnabled = false
+#endif
 
         let runtime = RuntimeCoordinator(
             menuBarState: menuBarState,

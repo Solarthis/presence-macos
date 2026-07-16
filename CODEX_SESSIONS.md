@@ -17,3 +17,4 @@ The session carrying the majority of core functionality will be marked PRIMARY, 
 | 2026-07-16 | 019f6b6d-0524-7762-8d71-6a69a2f5e096 (resumed) | slice-6: CodexPolicyCompiler + JSON extractor + fixtures (core functionality) | PRIMARY (provisional) |
 | 2026-07-16 | 019f6bf2-5a78-7382-a1b3-d618f7fd707c | slice-6 live smoke compile (1 call; fixtures-codex/smoke-slice-06.txt) | no |
 | 2026-07-16 | 019f6b6d-0524-7762-8d71-6a69a2f5e096 (resumed) | slice-7: additional-viewer UI, displaysOff, Flow F explanations, event history (core functionality) | PRIMARY (provisional) |
+| 2026-07-16 | 019f6b6d-0524-7762-8d71-6a69a2f5e096 (resumed) | fix: live-test session confinement + honest displaysOff preview (review findings) | PRIMARY (provisional) |

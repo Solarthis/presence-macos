@@ -210,6 +210,26 @@ private func examplesCompilerAndPreviewAreValid() {
         check(false, "policy-preview-labels-hide-apps-inert")
     }
 
+    let displaysOffPolicy = Policy(
+        schemaVersion: 1,
+        name: "Displays off preview",
+        rules: [
+            PolicyRule(trigger: .absence, graceSeconds: 30, actions: [.displaysOff]),
+        ],
+        restoration: PolicyRestoration(requireAuth: true)
+    )
+    let displaysOffLines = PolicyPreview.lines(for: displaysOffPolicy)
+    check(
+        displaysOffLines.contains(
+            "When nobody is visible for 30 seconds → Turn off displays (requires the 'Allow turning displays off' setting; your Mac locks only if 'Require password immediately' is enabled)"
+        ),
+        "policy-preview-describes-displays-off-honestly"
+    )
+    check(
+        !displaysOffLines.contains(where: { $0.contains("not active in this build yet") }),
+        "policy-preview-does-not-label-displays-off-inert"
+    )
+
     switch TemplateCompiler.compile("do something surprising") {
     case let .unrecognized(examples):
         check(examples.count == 3, "template-compiler-unrecognized-lists-three-examples")

@@ -19,7 +19,9 @@ public enum PolicyPreview {
                 case .hideApps:
                     lines.append("\(condition) → hide selected apps (not active in this build yet)")
                 case .displaysOff:
-                    lines.append("\(condition) → turn displays off (not active in this build yet)")
+                    lines.append(
+                        "\(condition) → Turn off displays (requires the 'Allow turning displays off' setting; your Mac locks only if 'Require password immediately' is enabled)"
+                    )
                 }
             }
         }

@@ -33,6 +33,28 @@ func runRuntimeIsolationChecks() {
         productionStartBlock?.contains(".production(applying: policyStore.activePolicy)") == true,
         "camera-production-entrypoint-applies-active-policy"
     )
+
+    let cameraStartBlock = functionBlock(named: "startCameraMonitoring", in: source)
+    let liveTestGuard = cameraStartBlock?.range(of: "guard !liveTestEnabled")
+    let cameraConstruction = cameraStartBlock?.range(
+        of: "CameraSource(fixtureCaptureEnabled:"
+    )
+    check(
+        liveTestGuard != nil
+            && cameraConstruction != nil
+            && liveTestGuard!.lowerBound < cameraConstruction!.lowerBound,
+        "live-test-session-never-binds-camera"
+    )
+
+    let appURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+        .appendingPathComponent("Sources/Presence/PresenceApp.swift")
+    let appSource = (try? String(contentsOf: appURL, encoding: .utf8)) ?? ""
+    check(
+        appSource.contains(
+            "#if DEBUG\n        let liveTestEnabled = options.liveTestEnabled\n#else\n        let liveTestEnabled = false\n#endif"
+        ),
+        "live-test-flag-is-debug-gated"
+    )
 }
 
 private func functionBlock(named name: String, in source: String) -> String? {

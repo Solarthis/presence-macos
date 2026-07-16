@@ -55,6 +55,11 @@
   preferred until release. Freeing 5-10 GB is HUMAN item 0 in CHECKPOINT_1.md (only Michael decides
   what personal data goes). No Trash-emptying, no personal-data deletion by the agent.
 
+- D10 2026-07-16: Live-test is confined to its session phase: liveTestEnabled is #if DEBUG
+  gated (release binaries ignore --live-test) and a live-test session can never bind the
+  camera (startCameraMonitoring guard; structural checks). Found by the independent review;
+  auto-dismiss of scripted/manual curtains during live test remains BY DESIGN (unattended
+  tests must never lock the machine). Never regress.
 - D9 2026-07-16: Safety timing is structurally isolated: MachineConfig.production (always
   PresenceDefaults; launch guard 30 s, grace 30 s) vs .scriptedDemo (8 s/0 s, DEBUG scripted runs
   only). start(source:) takes no config and always uses .production; only startScripted/simulate

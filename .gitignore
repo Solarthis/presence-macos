@@ -3,6 +3,7 @@ Presence.app/
 .DS_Store
 .env*
 *.secrets.*
-logs/
+logs/*
+!logs/live-calls.log
 spikes/*.bin
 fixtures/

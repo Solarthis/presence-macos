@@ -531,6 +531,10 @@ final class RuntimeCoordinator: NSObject {
 
     /// CameraSource construction is private and every instance enters through start(source:).
     private func startCameraMonitoring() {
+        guard !liveTestEnabled else {
+            start(source: nil)
+            return
+        }
         menuBarState.markCameraAuthorized()
         start(source: CameraSource(fixtureCaptureEnabled: fixtureCaptureEnabled))
     }

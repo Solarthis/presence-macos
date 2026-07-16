@@ -104,3 +104,29 @@ block here: exact command, verbatim trimmed output, commit hash it ran against.
   consumed the attempt budget.
 - App hiding remains CUT (D7) — structural check added.
 - `./verify.sh` → 169 PASS, 0 FAIL, 1 honest SKIP; signed Presence.app builds.
+
+## Corrections (2026-07-16, from the independent review — this log is append-only)
+- S3 evidence overcounts: the S3 block claims "94 PASS" and "13 new checks"; re-running
+  `swift run Checks` at the slice-3 commit (cee9225) yields 93 PASS and 12 new safety
+  checks. The counting error was the orchestrator's (off by one, harness line double-counted);
+  the checks themselves are as described. Later counts (127/131/146/169) re-verified correct.
+- Evidence citations: logs/*.log (Codex transcripts, live-call ledger) are local working
+  files and are NOT published in the repo (logs/ is gitignored) — except
+  logs/live-calls.log, now tracked as the live-call ledger. Codex Session IDs remain
+  recorded in CODEX_SESSIONS.md itself; fixtures-codex/*.txt (tracked) carry session ids
+  in their headers.
+
+## Fix — live-test confinement + honest displaysOff preview (2026-07-16)
+- Independent 4-dimension review (24 agents, adversarial verification) confirmed: the
+  --live-test auto-dismiss survived simulator exit into REAL camera monitoring (10 s
+  no-auth curtain dismissal for the rest of the session), and release builds honored the
+  flag; also PolicyPreview still labeled displaysOff inert after slice 7 shipped the executor.
+- Fix (Codex, resumed PRIMARY session): startCameraMonitoring() refuses to bind a camera in
+  a live-test session (falls to paused no-camera); liveTestEnabled is #if DEBUG-gated
+  (release binaries ignore the flag); displaysOff preview wording now honest and exact;
+  hideApps stays labeled inert. New structural checks:
+  live-test-session-never-binds-camera, live-test-flag-is-debug-gated, preview assertions.
+- Review also confirmed two documentation defects, corrected above (S3 count correction;
+  gitignored-evidence citations; logs/live-calls.log now tracked).
+- `./verify.sh` → 173 PASS, 0 FAIL, "VERIFY: ALL GATES GREEN" (count re-run after writing
+  this block, per the correction discipline above).
