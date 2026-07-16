@@ -1,0 +1,7 @@
+.build/
+Presence.app/
+.DS_Store
+.env*
+*.secrets.*
+logs/
+spikes/*.bin
