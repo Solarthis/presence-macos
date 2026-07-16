@@ -8,4 +8,6 @@
 - Settings sync.
 - ChatGPT copy-paste compile mode (zero-cost live-GPT alternative to Rung 2).
 - Per-window minimization via AX APIs (needs Accessibility permission — out of scope v1).
+- App hiding via NSRunningApplication.hide() — spike showed unreliable behavior on macOS 26
+  (spurious false returns, intermittent no-op); needs a robust retry/verify design.
 - Product rename ("Presence" collides heavily on the App Store, incl. a camera-security app).

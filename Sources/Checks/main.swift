@@ -15,8 +15,8 @@ func check(_ condition: Bool, _ name: String) {
     }
 }
 
-// --- Slice 1: harness self-check. Real scenario suites arrive with slice 2+. ---
 check(PresenceCoreVersion.schemaVersion == 1, "checks-harness-runs")
+runStateMachineChecks()
 
 if failures > 0 {
     print("\(failures) FAILURE(S)")

@@ -40,6 +40,15 @@
   never delivered; conservative default is hands-off.
 - D5 2026-07-16: All `codex exec` invocations use explicit sandbox flags (workspace-write for
   implementation slices, read-only for policy compiles). Never danger-full-access.
+- D7 2026-07-16: Spike S3 (NSRunningApplication.hide() without TCC) — 3 attempts, UNRELIABLE
+  (worked once via observed isHidden, silently failed once; return values spurious on macOS 26).
+  Pre-authorized fallback taken: APP HIDING CUT from this run. hideApps stays schema-valid but
+  inert ("not active in this build" in preview). Curtain is the protective action. Never revisit.
+- D6 2026-07-16: DISK CRITICAL — startup disk 98% full (~0.6 GB free). ENOSPC killed the codex CLI
+  upgrade (binary lost; reinstall pending) and blocks heavy builds. Mitigations: npm cache purged;
+  .build deleted between heavy phases when needed; df checked before heavy steps; debug builds
+  preferred until release. Freeing 5-10 GB is HUMAN item 0 in CHECKPOINT_1.md (only Michael decides
+  what personal data goes). No Trash-emptying, no personal-data deletion by the agent.
 
 ## Blocked / human items (accumulating into CHECKPOINT_1.md)
 - Devpost: open a draft submission at openai.devpost.com TODAY (5 min, human).

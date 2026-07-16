@@ -17,7 +17,9 @@ if grep -rEn "import (AVFoundation|Vision|AppKit|SwiftUI)" Sources/PresenceCore/
 fi
 
 echo "== security bypass gate =="
-if git grep -nE "SECURITY-BYPASS|skipValidation|alwaysAllow|sk-[A-Za-z0-9]{20}" -- Sources scripts build.sh verify.sh 2>/dev/null; then
+# verify.sh and secret-scan.sh legitimately contain these patterns (they ARE the gates) —
+# excluded from their own scan; everything else is covered.
+if git grep -nE "SECURITY-BYPASS|skipValidation|alwaysAllow|sk-[A-Za-z0-9]{20}" -- Sources build.sh scripts ':!scripts/secret-scan.sh' 2>/dev/null; then
   echo "FATAL: security bypass marker or key-shaped string in tree"
   exit 1
 fi

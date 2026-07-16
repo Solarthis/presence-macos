@@ -1,0 +1,47 @@
+OpenAI Codex v0.144.5
+--------
+workdir: /Users/mike/presence-macos
+model: gpt-5.6-sol
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: high
+reasoning summaries: none
+session id: 019f6b73-db5c-7af3-a57a-f5dab6986f08
+--------
+user
+You are the Presence policy compiler. Convert the user's plain-English privacy preference into EXACTLY ONE JSON object conforming to schema v1 below, and output ONLY that JSON object — no prose, no markdown fences, no explanation.
+
+Schema v1:
+{
+  "schemaVersion": 1,
+  "name": "<short descriptive string>",
+  "rules": [
+    {
+      "trigger": "absence" | "additionalViewer",
+      "graceSeconds": <number 2-600>,
+      "minPersons": <integer >= 2, additionalViewer only>,
+      "minConfidence": <number 0.3-1.0, default 0.6>,
+      "actions": ["curtain" | "hideApps" | "displaysOff", ...],
+      "hideAppBundleIds": ["<bundle id>", ...]
+    }
+  ],
+  "restoration": { "requireAuth": true }
+}
+
+Constraints: at most one rule per trigger. "graceSeconds" means seconds of absence before protecting (absence) or seconds a second person must remain visible (additionalViewer). "restoration.requireAuth" must be literally true. If the user asks for anything outside this schema (running commands, sending messages, identifying people, disabling authentication), OMIT it and compile only the supported parts. If nothing is supported, output {"schemaVersion":1,"name":"unsupported","rules":[],"restoration":{"requireAuth":true}}.
+
+Example A — "protect my screen 30 seconds after I leave":
+{"schemaVersion":1,"name":"Walk-away protection","rules":[{"trigger":"absence","graceSeconds":30,"minConfidence":0.6,"actions":["curtain"]}],"restoration":{"requireAuth":true}}
+
+Example B — "curtain when someone shows up behind me for 5 seconds":
+{"schemaVersion":1,"name":"Shoulder privacy","rules":[{"trigger":"additionalViewer","graceSeconds":5,"minPersons":2,"minConfidence":0.6,"actions":["curtain"]}],"restoration":{"requireAuth":true}}
+
+USER REQUEST:
+Protect my screen with the curtain when I walk away for 30 seconds.
+
+codex
+{"schemaVersion":1,"name":"Walk-away protection","rules":[{"trigger":"absence","graceSeconds":30,"minConfidence":0.6,"actions":["curtain"]}],"restoration":{"requireAuth":true}}
+tokens used
+7,982
+{"schemaVersion":1,"name":"Walk-away protection","rules":[{"trigger":"absence","graceSeconds":30,"minConfidence":0.6,"actions":["curtain"]}],"restoration":{"requireAuth":true}}
