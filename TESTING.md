@@ -193,3 +193,23 @@ policy, reserved for Michael; single command in SUBMISSION.md).
   Developer tools / Education; <3-min PUBLIC YouTube video; deadline Tue Jul 21 5:00 PM
   PT). Draft prep stopped exactly at the login screen — no authenticated session; the
   agent does not enter credentials.
+
+## Fix — stale paused-state menu label (2026-07-16, found by Michael in live use)
+
+- Symptom: menu bar showed "monitoring off — camera pipeline not yet installed" (a
+  slice-2-era placeholder in MenuBarState.swift that survived; it displayed for every
+  .paused state and clobbered the intended camera-permission text on each tick), which
+  read as a missing component. The camera pipeline and Start Monitoring → pre-prompt →
+  TCC-request wiring were verified present and correct (PresenceApp.swift
+  CameraPermissionControls, RuntimeCoordinator.requestCameraAccess).
+- Also found live: an app instance predating the day's rebuilds blocked the TCC prompt
+  (running image no longer matched the on-disk bundle); fixed by relaunching from the
+  current identity-signed bundle.
+- Fix: label now reads "monitoring off — choose Start Monitoring from this menu"
+  (commit `660443b`, tag `v1.0.2`). `./verify.sh` → 173 PASS / 0 FAIL / 1 SKIP, ALL
+  GATES GREEN; rebuilt identity-signed and relaunched.
+- Release v1.0.2 PUBLISHED as latest:
+  https://github.com/Solarthis/presence-macos/releases/tag/v1.0.2, assets
+  Presence-v1.0.2-macos-arm64.zip + .sha256
+  (`5548c4982c1f0de176440c4130154caf24de4c2cf4471c7e61029ef022226230`), checksum verified.
+  v1.0.1 and v1.0.0 untouched.

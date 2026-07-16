@@ -11,13 +11,14 @@ marked 🧑 are Michael-only.
   detection, with GPT-5.6-compiled protection policies.
 - Repo: https://github.com/Solarthis/presence-macos (private until Michael's one-command
   flip; description + topics already set)
-- Release: https://github.com/Solarthis/presence-macos/releases/tag/v1.0.1 —
-  "Presence v1.0.1 — Build Week release", published 2026-07-16 (becomes publicly visible
-  with the flip). Tag `v1.0.1` = commit `74a407c` (portable-build fix; app functionally
-  identical to the reviewed `v1.0.0` source tag, which remains untouched at `a44c341`).
-  Assets: `Presence-v1.0.1-macos-arm64.zip` +
-  SHA-256 `af78bcd72a9c986065edbf3dbb3e2186e201c1a0c673a368d2f19c08c40805b8` (.sha256
-  attached; download → `shasum -a 256 -c` round-trip verified OK).
+- Release (latest): https://github.com/Solarthis/presence-macos/releases/tag/v1.0.2 —
+  "Presence v1.0.2 — Build Week release", published 2026-07-16 (becomes publicly visible
+  with the flip). Tag `v1.0.2` = commit `660443b` (menu-bar copy fix: stale "camera
+  pipeline not yet installed" paused label → honest Start Monitoring hint). v1.0.1
+  (portable-build fix) and the reviewed source tag `v1.0.0` (`a44c341`) remain untouched.
+  Assets: `Presence-v1.0.2-macos-arm64.zip` +
+  SHA-256 `5548c4982c1f0de176440c4130154caf24de4c2cf4471c7e61029ef022226230` (.sha256
+  attached).
   Verification: **173 PASS / 0 FAIL / 1 honest SKIP** (fixture-vision, until Michael
   captures local fixtures) + 5 source gates — re-confirmed from a fresh GitHub clone,
   including both build paths (maintainer identity-signed and no-identity ad-hoc portable).
