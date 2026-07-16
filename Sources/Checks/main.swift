@@ -17,6 +17,7 @@ func check(_ condition: Bool, _ name: String) {
 
 check(PresenceCoreVersion.schemaVersion == 1, "checks-harness-runs")
 runStateMachineChecks()
+runSafetyConfigChecks()
 
 if failures > 0 {
     print("\(failures) FAILURE(S)")

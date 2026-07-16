@@ -13,8 +13,8 @@
 10. Two human checkpoints only; agent never clicks TCC dialogs, does Touch ID, films, or submits.
 
 ## Phase / position
-- Phase: SLICE 1 (scaffold) — in progress.
-- Next concrete action: first build + verify + commit, then delegate slice 2 (state machine + Checks) to Codex.
+- Phase: SLICE 3 complete (curtain + safety + LA restore, incl. timing-isolation fix). 94 checks green.
+- Next concrete action: delegate slice 4 (policy schema, validation, storage, preview/approval) to Codex PRIMARY session.
 
 ## Verified environment (preflight 2026-07-16 09:51 -04)
 - macOS 26.4 (25E246) arm64; CLT-only, Swift 6.3; NO Xcode/xcodebuild/XCTest.
@@ -40,6 +40,9 @@
   never delivered; conservative default is hands-off.
 - D5 2026-07-16: All `codex exec` invocations use explicit sandbox flags (workspace-write for
   implementation slices, read-only for policy compiles). Never danger-full-access.
+- D8 2026-07-16: GitHub repo Solarthis/presence-macos created PRIVATE early (post secret-scan)
+  and pushed per green slice — off-machine durability after the disk incident. Public flip
+  happens ONLY at slice 8 after all release checks. Publication intent unchanged.
 - D7 2026-07-16: Spike S3 (NSRunningApplication.hide() without TCC) — 3 attempts, UNRELIABLE
   (worked once via observed isHidden, silently failed once; return values spurious on macOS 26).
   Pre-authorized fallback taken: APP HIDING CUT from this run. hideApps stays schema-valid but
@@ -49,6 +52,12 @@
   .build deleted between heavy phases when needed; df checked before heavy steps; debug builds
   preferred until release. Freeing 5-10 GB is HUMAN item 0 in CHECKPOINT_1.md (only Michael decides
   what personal data goes). No Trash-emptying, no personal-data deletion by the agent.
+
+- D9 2026-07-16: Safety timing is structurally isolated: MachineConfig.production (always
+  PresenceDefaults; launch guard 30 s, grace 30 s) vs .scriptedDemo (8 s/0 s, DEBUG scripted runs
+  only). start(source:) takes no config and always uses .production; only startScripted/simulate
+  use .scriptedDemo; --live-test inert without a valid --simulate scenario (LaunchOptions).
+  Enforced by 13 Checks + verify.sh timing-isolation and auth-boundary gates. Never regress.
 
 ## Blocked / human items (accumulating into CHECKPOINT_1.md)
 - Devpost: open a draft submission at openai.devpost.com TODAY (5 min, human).

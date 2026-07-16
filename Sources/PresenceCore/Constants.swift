@@ -39,3 +39,13 @@ public struct MachineConfig {
         self.additionalViewerSustainSeconds = additionalViewerSustainSeconds
     }
 }
+
+public extension MachineConfig {
+    /// Production always derives from PresenceDefaults. Never accepts compressed timing.
+    static var production: MachineConfig { MachineConfig() }
+
+    /// Compressed timing for explicit DEBUG scripted runs only. Never used with a camera.
+    static var scriptedDemo: MachineConfig {
+        MachineConfig(graceSeconds: 8, launchGuardSeconds: 0, additionalViewerEnabled: true)
+    }
+}

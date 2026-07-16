@@ -1,18 +1,130 @@
 {
   "items": [
-    {"id": "S1", "slice": 1, "description": "Repo scaffold: SPM skeleton, build.sh, verify.sh, signed app launches", "tier": "agent", "status": "agent_complete", "evidence": "TESTING.md#s1", "blocked_reason": null},
-    {"id": "S2", "slice": 2, "description": "Pure state machine + full Checks scenario suite green", "tier": "agent", "status": "agent_complete", "evidence": "TESTING.md#s2", "blocked_reason": null},
-    {"id": "S3", "slice": 3, "description": "Curtain + escapes + safety mechanics + LocalAuthentication restore (simulated source)", "tier": "agent", "status": "todo", "evidence": null, "blocked_reason": null},
-    {"id": "S4", "slice": 4, "description": "Policy schema + 9-step validation + storage + preview/approve UI + TemplatePolicyCompiler", "tier": "agent", "status": "todo", "evidence": null, "blocked_reason": null},
-    {"id": "S5", "slice": 5, "description": "Camera pipeline + Perception layer + HUD + simulator mode", "tier": "agent", "status": "todo", "evidence": null, "blocked_reason": null},
-    {"id": "S6", "slice": 6, "description": "Flow E Rung 2 (CodexPolicyCompiler) + committed fixtures", "tier": "agent", "status": "todo", "evidence": null, "blocked_reason": null},
-    {"id": "S7", "slice": 7, "description": "Tier 2 in order: additional-viewer, app hiding (post-spike), displaysOff, Flow F, onboarding", "tier": "agent", "status": "todo", "evidence": null, "blocked_reason": null},
-    {"id": "S8", "slice": 8, "description": "Review passes, docs, secret scan, publication, release, submission package", "tier": "agent", "status": "todo", "evidence": null, "blocked_reason": null},
-    {"id": "H1", "slice": 0, "description": "Open Devpost draft at openai.devpost.com (today)", "tier": "human", "status": "human_required", "evidence": null, "blocked_reason": null},
-    {"id": "H2", "slice": 5, "description": "Click Allow on the one-time camera TCC dialog (Checkpoint 1)", "tier": "human", "status": "human_required", "evidence": null, "blocked_reason": null},
-    {"id": "H3", "slice": 5, "description": "One real Touch ID curtain-unlock to confirm LocalAuthentication live", "tier": "human", "status": "human_required", "evidence": null, "blocked_reason": null},
-    {"id": "H4", "slice": 5, "description": "Capture fixture photos: empty room / one person / two people", "tier": "human", "status": "human_required", "evidence": null, "blocked_reason": null},
-    {"id": "H5", "slice": 8, "description": "Execute DEMO.md manual on-camera checklist; film; upload to YouTube (Public)", "tier": "human", "status": "human_required", "evidence": null, "blocked_reason": null},
-    {"id": "H6", "slice": 8, "description": "Submit on Devpost with Codex Session ID (agent never submits)", "tier": "human", "status": "human_required", "evidence": null, "blocked_reason": null}
+    {
+      "id": "S1",
+      "slice": 1,
+      "description": "Repo scaffold: SPM skeleton, build.sh, verify.sh, signed app launches",
+      "tier": "agent",
+      "status": "agent_complete",
+      "evidence": "TESTING.md#s1",
+      "blocked_reason": null
+    },
+    {
+      "id": "S2",
+      "slice": 2,
+      "description": "Pure state machine + full Checks scenario suite green",
+      "tier": "agent",
+      "status": "agent_complete",
+      "evidence": "TESTING.md#s2",
+      "blocked_reason": null
+    },
+    {
+      "id": "S3",
+      "slice": 3,
+      "description": "Curtain + escapes + safety mechanics + LocalAuthentication restore (simulated source)",
+      "tier": "agent",
+      "status": "agent_complete",
+      "evidence": "TESTING.md#s3",
+      "blocked_reason": null
+    },
+    {
+      "id": "S4",
+      "slice": 4,
+      "description": "Policy schema + 9-step validation + storage + preview/approve UI + TemplatePolicyCompiler",
+      "tier": "agent",
+      "status": "todo",
+      "evidence": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "S5",
+      "slice": 5,
+      "description": "Camera pipeline + Perception layer + HUD + simulator mode",
+      "tier": "agent",
+      "status": "todo",
+      "evidence": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "S6",
+      "slice": 6,
+      "description": "Flow E Rung 2 (CodexPolicyCompiler) + committed fixtures",
+      "tier": "agent",
+      "status": "todo",
+      "evidence": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "S7",
+      "slice": 7,
+      "description": "Tier 2 in order: additional-viewer, app hiding (post-spike), displaysOff, Flow F, onboarding",
+      "tier": "agent",
+      "status": "todo",
+      "evidence": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "S8",
+      "slice": 8,
+      "description": "Review passes, docs, secret scan, publication, release, submission package",
+      "tier": "agent",
+      "status": "todo",
+      "evidence": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "H1",
+      "slice": 0,
+      "description": "Open Devpost draft at openai.devpost.com (today)",
+      "tier": "human",
+      "status": "human_required",
+      "evidence": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "H2",
+      "slice": 5,
+      "description": "Click Allow on the one-time camera TCC dialog (Checkpoint 1)",
+      "tier": "human",
+      "status": "human_required",
+      "evidence": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "H3",
+      "slice": 5,
+      "description": "One real Touch ID curtain-unlock to confirm LocalAuthentication live",
+      "tier": "human",
+      "status": "human_required",
+      "evidence": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "H4",
+      "slice": 5,
+      "description": "Capture fixture photos: empty room / one person / two people",
+      "tier": "human",
+      "status": "human_required",
+      "evidence": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "H5",
+      "slice": 8,
+      "description": "Execute DEMO.md manual on-camera checklist; film; upload to YouTube (Public)",
+      "tier": "human",
+      "status": "human_required",
+      "evidence": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "H6",
+      "slice": 8,
+      "description": "Submit on Devpost with Codex Session ID (agent never submits)",
+      "tier": "human",
+      "status": "human_required",
+      "evidence": null,
+      "blocked_reason": null
+    }
   ]
 }
